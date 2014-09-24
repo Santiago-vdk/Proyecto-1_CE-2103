@@ -11,6 +11,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = Proyecto-1_CE-2103
 TEMPLATE = app
 
+INCLUDEPATH += C:\QtSDK\opencv\opencv-build\install\include
+LIBS += "C:/QtSDK/opencv/opencv-build/bin/*.dll"
 
 SOURCES += main.cpp\
         mainwindow.cpp
