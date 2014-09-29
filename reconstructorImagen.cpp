@@ -42,7 +42,6 @@ void reconstructorImagen::descomponerImagen()
                 r = input[img.step[0] * i + img.step[1] * j + 2] ;
                 pixel *Pixel = new pixel(r,g,b);
                 matrizLectura->insertarPos(i,j, Pixel);
-
             }
      }
 
@@ -52,6 +51,31 @@ void reconstructorImagen::descomponerImagen()
 
 void reconstructorImagen::detectorFallos()
 {
-
-    qDebug() << "matrizPixeles.size()";
+    int pixelesBlancos = 0;
+    for(int i = 0; i < matrizLectura->getAnchoI(); i++){
+        for(int j = 0; j < matrizLectura->getLargoJ(); j++){
+            if(matrizLectura->getPos(i,j)->esBlanco() == true){
+                pixelesBlancos ++;
+            }
+            else{
+            }
+        }
+    }
+    if(pixelesBlancos > 0){
+        std::cout << "La matriz tiene pixeles blancos, hay: " << pixelesBlancos << std::endl;
+        std::cout << "Se debe arreglar" << endl;
+    }
+    else{
+        std::cout << "La mtriz no posee pixeles bancos" << endl;
+    }
 }
+
+
+
+
+
+
+
+
+
+
