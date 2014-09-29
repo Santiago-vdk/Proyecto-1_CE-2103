@@ -8,11 +8,12 @@
 #include <QDebug>
 #include "pixel.h"
 #include "matrizPixeles.h"
+#include <QProgressBar>
 
 using namespace cv;
 using namespace std;
 
-reconstructorImagen::reconstructorImagen(QWidget *parent, string pImagen) :
+reconstructorImagen::reconstructorImagen(QWidget *parent, string pImagen):
     QWidget(parent),
     ui(new Ui::reconstructorImagen)
 {
@@ -20,6 +21,7 @@ reconstructorImagen::reconstructorImagen(QWidget *parent, string pImagen) :
     _imagen = pImagen;
     descomponerImagen();
     detectorFallos();
+
 
 }
 
@@ -49,7 +51,7 @@ void reconstructorImagen::descomponerImagen()
 
 }
 
-void reconstructorImagen::detectorFallos()
+bool reconstructorImagen::detectorFallos()
 {
     int pixelesBlancos = 0;
     for(int i = 0; i < matrizLectura->getAnchoI(); i++){
@@ -64,10 +66,24 @@ void reconstructorImagen::detectorFallos()
     if(pixelesBlancos > 0){
         std::cout << "La matriz tiene pixeles blancos, hay: " << pixelesBlancos << std::endl;
         std::cout << "Se debe arreglar" << endl;
+        _errores = pixelesBlancos;
+        return true;
     }
     else{
-        std::cout << "La mtriz no posee pixeles bancos" << endl;
+        std::cout << "La matriz no posee pixeles bancos" << endl;
+        _errores = pixelesBlancos;
+        return false;
     }
+}
+
+int reconstructorImagen::getErrores()
+{
+    return _errores;
+}
+
+bool reconstructorImagen::arreglarImagen()
+{
+    //Codigo para arreglar la imagen
 }
 
 

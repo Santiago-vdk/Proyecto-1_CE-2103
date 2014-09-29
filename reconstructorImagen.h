@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include "pixel.h"
 #include <matrizPixeles.h>
+#include <QProgressBar>
 
 
 
@@ -23,12 +24,18 @@ public:
     explicit reconstructorImagen(QWidget *parent = 0, string pImagen = "");
     ~reconstructorImagen();
     void descomponerImagen();
-    void detectorFallos();
+    bool detectorFallos();
+    int getErrores();
+    bool arreglarImagen();
+
+
 
 private:
     Ui::reconstructorImagen *ui;
     string _imagen;
     matrizPixeles *matrizLectura;
+    int _errores = 0;
+
 
 
 };
