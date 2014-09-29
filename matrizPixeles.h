@@ -14,10 +14,15 @@ public:
     listaPixel *getTail();
     pixel * getPos(int i, int j);
 
+    int getAnchoI();
+    int getLargoJ();
 
 private:
     listaPixel *_head=NULL;
     listaPixel *_tail=NULL;
+    int _anchoI;
+    int _largoJ;
+
 
 };
 

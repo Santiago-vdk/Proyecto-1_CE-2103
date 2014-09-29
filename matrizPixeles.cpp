@@ -2,9 +2,14 @@
 #include "listaPixel.h"
 #include <QDebug>
 #include "pixel.h"
+#include <iostream>
+
+using namespace std;
 
 matrizPixeles::matrizPixeles(int i, int j)
 {
+    _anchoI = i;
+    _largoJ = j;
     listaPixel *tmp = new listaPixel();
     _head = tmp;
     for(int a = 0; a < i; a++){
@@ -13,7 +18,9 @@ matrizPixeles::matrizPixeles(int i, int j)
         }
 
         listaPixel *tmp2 = new listaPixel();
-        tmp = tmp2;
+        tmp->setNext(tmp2);
+        tmp2->setPrev(tmp);
+        tmp=tmp2;
     }
     delete tmp->getNext();
     tmp->setNext(NULL);
@@ -54,6 +61,16 @@ pixel *matrizPixeles::getPos(int i, int j)
         tmp2 = tmp2->getPixelNext();
     }
     return tmp2->getDato();
+}
+
+int matrizPixeles::getAnchoI()
+{
+    return _anchoI;
+}
+
+int matrizPixeles::getLargoJ()
+{
+    return _largoJ;
 }
 
 
