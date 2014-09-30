@@ -84,6 +84,28 @@ int reconstructorImagen::getErrores()
 bool reconstructorImagen::arreglarImagen()
 {
     //Codigo para arreglar la imagen
+    unsigned char bits[10][10];
+    int casita = 0;
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 10; j++){
+            if(casita % 2 == 0){
+                bits[i][j] = 255;
+            }
+            else{
+                bits[i][j] = 0;
+            }
+            casita++;
+        }
+    }
+
+
+    Mat image(10,10, CV_8UC1,bits);
+
+
+    imshow("test", image);
+
+
+
 }
 
 
