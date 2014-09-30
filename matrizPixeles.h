@@ -13,6 +13,13 @@ public:
     listaPixel *getHead();
     listaPixel *getTail();
     pixel * getPos(int i, int j);
+    void corregirMatriz();
+    void recorrer1();
+    void recorrer2();
+    void recorrer3();
+    void recorrer4();
+    void pintar(int i, int j);
+    bool HayBlancos();
 
     int getAnchoI();
     int getLargoJ();
