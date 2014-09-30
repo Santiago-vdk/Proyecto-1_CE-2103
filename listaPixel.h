@@ -8,11 +8,14 @@ class listaPixel
 {
 public:
     listaPixel();
+    ~listaPixel();
 
     nodoPixel *getHead();
     nodoPixel *getTail();
     listaPixel *getNext();
     listaPixel *getPrev();
+    int getTamanio();
+    nodoPixel *getPos(int i);
 
     void setHead(nodoPixel *pHead);
     void setTail(nodoPixel *pTail);
@@ -20,7 +23,6 @@ public:
     void setPrev(listaPixel *pPrev);
 
     void insertarFinal(pixel *nodo);
-    void borrarPos(int i);
 
 
 private:
@@ -28,6 +30,7 @@ private:
     nodoPixel* _tail=NULL;
     listaPixel* _next=NULL;
     listaPixel* _prev=NULL;
+    int _tamanio=0;
 };
 
 #endif // LISTAPIXEL_H

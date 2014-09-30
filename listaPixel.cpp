@@ -5,6 +5,15 @@ listaPixel::listaPixel()
 {
 }
 
+listaPixel::~listaPixel()
+{
+    for(int i=0;i<_tamanio;i++){
+        nodoPixel *tmp=_head;
+        _head=_head->getPixelNext();
+        delete tmp;
+    }
+}
+
 
 
 
@@ -20,6 +29,7 @@ void listaPixel::insertarFinal(pixel *nodo)
         tmp->setPixelPrev(_tail);
         _tail = tmp;
     }
+    _tamanio++;
 }
 
 
@@ -48,6 +58,20 @@ listaPixel* listaPixel::getNext()
 listaPixel* listaPixel::getPrev()
 {
     return _prev;
+}
+
+int listaPixel::getTamanio()
+{
+    return _tamanio;
+}
+
+nodoPixel *listaPixel::getPos(int i)
+{
+    nodoPixel *tmp= _head;
+    for(int a=0;a<i;a++){
+        tmp=tmp->getPixelNext();
+    }
+    return tmp;
 }
 
 void listaPixel::setHead(nodoPixel *pHead)
