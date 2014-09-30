@@ -37,6 +37,10 @@ void reconstructorImagen::descomponerImagen()
     unsigned char *input = (unsigned char*)(img.data);
     matrizLectura = new matrizPixeles(img.rows,img.cols);
     int r,g,b;
+
+    std::cout << img.rows << std::endl;
+    std::cout << img.cols << std::endl;
+
     for(int i = 0; i < img.rows ;i++){
             for(int j = 0; j < img.cols ;j++){
                 b = input[img.step[0] * i + img.step[1] * j ];
@@ -81,27 +85,29 @@ int reconstructorImagen::getErrores()
     return _errores;
 }
 
-bool reconstructorImagen::arreglarImagen()
+void reconstructorImagen::arreglarImagen()
 {
     //Codigo para arreglar la imagen
-    unsigned char bits[10][10];
-    int casita = 0;
-    for(int i = 0; i < 10; i++){
-        for(int j = 0; j < 10; j++){
-            if(casita % 2 == 0){
-                bits[i][j] = 255;
-            }
-            else{
-                bits[i][j] = 0;
-            }
-            casita++;
+    matrizLectura->corregirMatriz();
+
+    int j2 =0;
+    unsigned char bits[matrizLectura->getAnchoI()][matrizLectura->getLargoJ() *3];
+    for(int i = 0; i < matrizLectura->getAnchoI(); i++){
+        for(int j = 0; j < matrizLectura->getLargoJ() * 3; j+=3){
+            //std::cout << matrizLectura->getPos(i,j2)->getBlue() << std::endl;
+            bits[i][j + 0] = matrizLectura->getPos(i,j2)->getBlue();
+            bits[i][j + 1] = matrizLectura->getPos(i,j2)->getGreen();
+            bits[i][j + 2] = matrizLectura->getPos(i,j2)->getRed();
+            j2++;
         }
+        j2 = 0;
+
     }
-
-
-    Mat image(10,10, CV_8UC1,bits);
-
-
+    bits[0][0 + 0] = 100;
+    bits[0][0 + 1] = 50;
+    bits[0][0 + 2] = 150;
+    std::cout << bits[9][9] << std::endl;
+    Mat image(50,50, CV_8UC1,bits);
     imshow("test", image);
 
 

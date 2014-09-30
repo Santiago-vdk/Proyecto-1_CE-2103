@@ -26,7 +26,7 @@ public:
     void descomponerImagen();
     bool detectorFallos();
     int getErrores();
-    bool arreglarImagen();
+    void arreglarImagen();
 
 
 
@@ -34,7 +34,7 @@ private:
     Ui::reconstructorImagen *ui;
     string _imagen;
     matrizPixeles *matrizLectura;
-    int _errores = 0;
+    int _errores;
 
 
 
