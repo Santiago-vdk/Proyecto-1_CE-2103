@@ -1,4 +1,5 @@
 #include "pixel.h"
+#include <QDebug>
 
 pixel::pixel(int pRed, int pGreen, int pBlue)
 {
