@@ -30,7 +30,7 @@ private:
     nodoPixel* _tail=NULL;
     listaPixel* _next=NULL;
     listaPixel* _prev=NULL;
-    int _tamanio=0;
+    int _tamanio;
 };
 
 #endif // LISTAPIXEL_H

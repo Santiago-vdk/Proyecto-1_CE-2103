@@ -3,6 +3,7 @@
 
 listaPixel::listaPixel()
 {
+    _tamanio=0;
 }
 
 listaPixel::~listaPixel()
