@@ -9,6 +9,9 @@
 #include "pixel.h"
 #include "matrizPixeles.h"
 #include <QProgressBar>
+#include <cvimagewidget.h>
+#include <QMainWindow>
+#include <QDialog>
 
 using namespace cv;
 using namespace std;
@@ -89,12 +92,10 @@ void reconstructorImagen::arreglarImagen()
 {
     //Codigo para arreglar la imagen
     matrizLectura->corregirMatriz();
-
     int j2 =0;
     unsigned char bits[matrizLectura->getAnchoI()][matrizLectura->getLargoJ() *3];
     for(int i = 0; i < matrizLectura->getAnchoI(); i++){
         for(int j = 0; j < matrizLectura->getLargoJ() * 3; j+=3){
-            //std::cout << matrizLectura->getPos(i,j2)->getBlue() << std::endl;
             bits[i][j + 0] = matrizLectura->getPos(i,j2)->getBlue();
             bits[i][j + 1] = matrizLectura->getPos(i,j2)->getGreen();
             bits[i][j + 2] = matrizLectura->getPos(i,j2)->getRed();
@@ -103,12 +104,15 @@ void reconstructorImagen::arreglarImagen()
         j2 = 0;
 
     }
-    bits[0][0 + 0] = 100;
-    bits[0][0 + 1] = 50;
-    bits[0][0 + 2] = 150;
-    std::cout << bits[9][9] << std::endl;
-    Mat image(50,50, CV_8UC1,bits);
-    imshow("test", image);
+
+    Mat image(matrizLectura->getAnchoI(),matrizLectura->getLargoJ(), CV_8UC3, bits);
+    cv::imwrite("test.jpg",image);
+    CVImageWidget* imageWidget = new CVImageWidget();
+    QMainWindow *popup = new QMainWindow();
+    popup->setCentralWidget(imageWidget);
+    imageWidget->showImage(image);
+    popup->show();
+
 
 
 
