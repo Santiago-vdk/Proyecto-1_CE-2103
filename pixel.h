@@ -14,6 +14,10 @@ public:
     int getGreen();
     int getBlue();
 
+    void setRed(int red);
+    void setGreen(int green);
+    void setBlue(int blue);
+
 
 
 

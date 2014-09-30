@@ -48,3 +48,18 @@ int pixel::getGreen()
 
 
 
+
+void pixel::setRed(int red)
+{
+    _Red=red;
+}
+void pixel::setGreen(int green)
+{
+    _Green=green;
+}
+void pixel::setBlue(int blue)
+{
+    _Red=blue;
+}
+
+
