@@ -7,6 +7,11 @@ nodoPixel::nodoPixel(pixel *dato)
 
 }
 
+pixel *nodoPixel::getPixel()
+{
+    return _dato;
+}
+
 nodoPixel * nodoPixel::getPixelNext()
 {
     return _next;
@@ -32,7 +37,4 @@ void nodoPixel::setDato(pixel* pDato)
     _dato = pDato;
 }
 
-pixel * nodoPixel::getDato()
-{
-    return _dato;
-}
+

@@ -7,14 +7,13 @@ class nodoPixel
 {
 public:
     nodoPixel(pixel *dato);
-    pixel * getPixel();
+    pixel *getPixel();
     nodoPixel* getPixelNext();
     nodoPixel* getPixelPrev();
     void setPixelNext(nodoPixel *pPixelNext);
     void setPixelPrev(nodoPixel *pPixelPrev);
 
     void setDato(pixel *pDato);
-    pixel *getDato();
 
 private:
     nodoPixel *_next=NULL;
