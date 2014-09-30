@@ -201,24 +201,26 @@ void matrizPixeles::pintar(int i, int j)
         adyacentesNoBlancos->insertarFinal(getPos(i+1,j));
     }
     if((j>0) && (!getPos(j-1,j)->esBlanco())){
-        adyacentesNoBlancos->insertarFinal(getPos(j-1,j));
+        adyacentesNoBlancos->insertarFinal(getPos(i,j-1));
     }
     if((j<_largoJ-1)&&(!getPos(j+1,j)->esBlanco())){
-        adyacentesNoBlancos->insertarFinal(getPos(j+1,j));
+        adyacentesNoBlancos->insertarFinal(getPos(i,j+1));
     }
+
     int red=0;
     int green=0;
     int blue=0;
     for(int a=0;a<adyacentesNoBlancos->getTamanio();a++){
-        red+=(adyacentesNoBlancos->getPos(a))->getPixel()->getRed();
+        std::cout <<"red"<<adyacentesNoBlancos->getPos(a)->getPixel()->getRed() << std::endl;
+        red+=adyacentesNoBlancos->getPos(a)->getPixel()->getRed();
         green+=adyacentesNoBlancos->getPos(a)->getPixel()->getGreen();
         blue+=adyacentesNoBlancos->getPos(a)->getPixel()->getBlue();
     }
-
+    std::cout <<"total"<< red << std::endl;
     red=(red/adyacentesNoBlancos->getTamanio());
     green=(green/adyacentesNoBlancos->getTamanio());
     blue=(blue/adyacentesNoBlancos->getTamanio());
-    std::cout << red << std::endl;
+    //std::cout <<"red"<< red << std::endl;
 
     getPos(i,j)->setRed(red);
     getPos(i,j)->setGreen(green);
