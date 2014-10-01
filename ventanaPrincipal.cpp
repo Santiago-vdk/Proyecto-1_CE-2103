@@ -12,6 +12,9 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv/cv.h"
+#include <QToolBar>
+#include <QIcon>
+#include <QAction>
 
 
 
@@ -80,14 +83,42 @@ void ventanaPrincipal::ventanaRevisado()
 
 void ventanaPrincipal::ventanaMostrado()
 {
-    unsigned char bits = reconstructor->arreglarImagen();
-    Mat image(reconstructor->getMatrizI(),reconstructor->getMatrizJ(), CV_8UC3, bits);
+    Mat image;
+    image = reconstructor->arreglarImagen();
     cv::imwrite("test.jpg",image);
-    CVImageWidget* imageWidget = new CVImageWidget();
+
+    QPixmap newpix("C:/new.png");
+    QPixmap openpix("C:/open.png");
+    QPixmap quitpix("C:/quit.png");
+
+    QToolBar *toolbar = addToolBar("ToolBar");
+    toolbar->addAction(QIcon(newpix), "New File");
+    toolbar->addAction(QIcon(openpix), "Open File");
+    toolbar->addSeparator();
+    QAction *quit = toolbar->addAction(QIcon(quitpix),
+        "Quit Application");
+
+    connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
+
+
+    CVImageWidget* imageWidget = new CVImageWidget;
     QMainWindow *popup = new QMainWindow();
-    popup->setCentralWidget(imageWidget);
+
+    QWidget *mainWidget = new QWidget(popup);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    layout->addWidget(imageWidget);
+
+    popup->addToolBar(toolbar);
+
+    mainWidget->setLayout(layout);
+    popup->setCentralWidget(mainWidget);
+
     imageWidget->showImage(image);
+
     popup->show();
+
 }
 
 ventanaPrincipal::~ventanaPrincipal()
