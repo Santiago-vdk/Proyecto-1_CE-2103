@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QString>
 #include <reconstructorImagen.h>
+#include <QPushButton>
 
 
 using namespace std;
@@ -24,6 +25,7 @@ public:
 private slots:
     void on_pushButton_clicked();
     void ventanaRevisado();
+    void ventanaMostrado();
     void on_pushButton_2_clicked();
 
     void popupCancelar();
@@ -34,8 +36,8 @@ private:
     QDir directory;
     string imagen;
     reconstructorImagen *reconstructor;
-    QWidget *popup;
-
+    QDialog *popupDialogReconstruir;
+    QPushButton *botonCorregir;
 
 
 };

@@ -7,9 +7,15 @@
 #include "reconstructorImagen.h"
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QWidget>
+#include <cvimagewidget.h>
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv/cv.h"
 
 
 
+using namespace cv;
 using namespace std;
 ventanaPrincipal::ventanaPrincipal(QWidget *parent) :
     QMainWindow(parent),
@@ -17,12 +23,6 @@ ventanaPrincipal::ventanaPrincipal(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->pushButton_2->setDisabled(true);
-//    QPixmap bkgnd(":/recursos/bg1.png");
-//    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
-//    QPalette palette;
-//    palette.setBrush(QPalette::Background, bkgnd);
-//    this->setPalette(palette);
-
 
 }
 
@@ -45,23 +45,21 @@ void ventanaPrincipal::on_pushButton_clicked()
 
 void ventanaPrincipal::ventanaRevisado()
 {
+    ui->pushButton_2->setDisabled(true);
 
     int blancos = reconstructor->getErrores();
-
     QString blanc = QString::number(blancos);
+    popupDialogReconstruir = new QDialog();
 
-
-
-    popup = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout;
-    QPushButton *botonCorregir = new QPushButton("Corregir", popup);
-    QPushButton *botonCancelar = new QPushButton("Cancelar", popup);
-    QLabel *indicador = new QLabel("Errores Detectados: ", popup);
+    botonCorregir = new QPushButton("Corregir");
+    QPushButton *botonCancelar = new QPushButton("Cancelar");
 
-    QLabel *indicadorNumero = new QLabel(blanc, popup);
-    popup->setMinimumWidth(300);
-    popup->setMinimumHeight(150);
-    popup->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
+    QLabel *indicador = new QLabel("Errores Detectados: ");
+    QLabel *indicadorNumero = new QLabel(blanc);
+    popupDialogReconstruir->setMinimumWidth(300);
+    popupDialogReconstruir->setMinimumHeight(150);
+    popupDialogReconstruir->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
 
     layout->addWidget(botonCorregir);
     layout->addWidget(botonCancelar);
@@ -69,17 +67,28 @@ void ventanaPrincipal::ventanaRevisado()
     layout->addWidget(indicador);
     layout->addWidget(indicadorNumero);
 
-    popup->setLayout(layout);
-    popup->show();
+    popupDialogReconstruir->setLayout(layout);
+    popupDialogReconstruir->show();
 
     connect(botonCorregir, SIGNAL(released()), this, SLOT(popupCorregir()));
     connect(botonCancelar, SIGNAL(released()), this, SLOT(popupCancelar()));
-
-
-
-
+    if (reconstructor->getErrores() == 0){
+        botonCorregir->setDisabled(true);
+        botonCorregir->setText("Sin Errores");
+    }
 }
 
+void ventanaPrincipal::ventanaMostrado()
+{
+    unsigned char bits = reconstructor->arreglarImagen();
+    Mat image(reconstructor->getMatrizI(),reconstructor->getMatrizJ(), CV_8UC3, bits);
+    cv::imwrite("test.jpg",image);
+    CVImageWidget* imageWidget = new CVImageWidget();
+    QMainWindow *popup = new QMainWindow();
+    popup->setCentralWidget(imageWidget);
+    imageWidget->showImage(image);
+    popup->show();
+}
 
 ventanaPrincipal::~ventanaPrincipal()
 {
@@ -91,22 +100,20 @@ ventanaPrincipal::~ventanaPrincipal()
 void ventanaPrincipal::on_pushButton_2_clicked()
 {
     //this->close();
-    reconstructor = new reconstructorImagen(this,imagen );
-    reconstructor->setVisible(true);
+    reconstructor = new reconstructorImagen(0,imagen );
+    //reconstructor->setVisible(true);
     ui->labelCargar->setText("Lectura Lista");
     ventanaRevisado();
-
 }
 
 void ventanaPrincipal::popupCancelar()
 {
-
-
-    popup->close();
-
+   popupDialogReconstruir->close();
 }
 
 void ventanaPrincipal::popupCorregir()
 {
-    reconstructor->arreglarImagen();
+    ventanaMostrado();
+    popupDialogReconstruir->close();
+
 }
