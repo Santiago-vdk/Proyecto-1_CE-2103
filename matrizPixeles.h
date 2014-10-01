@@ -19,7 +19,7 @@ public:
     void recorrer3();
     void recorrer4();
     void pintar(int i, int j);
-    bool HayBlancos();
+    int CantidadBlancos();
 
     int getAnchoI();
     int getLargoJ();
@@ -29,6 +29,15 @@ private:
     listaPixel *_tail=NULL;
     int _anchoI;
     int _largoJ;
+
+    int _recorrido1I;
+    int _recorrido1J;
+    int _recorrido2I;
+    int _recorrido2J;
+    int _recorrido3I;
+    int _recorrido3J;
+    int _recorrido4I;
+    int _recorrido4J;
 
 
 };
