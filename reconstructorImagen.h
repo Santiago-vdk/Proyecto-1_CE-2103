@@ -26,7 +26,10 @@ public:
     void descomponerImagen();
     bool detectorFallos();
     int getErrores();
-    void arreglarImagen();
+    unsigned char arreglarImagen();
+
+    int getMatrizI();
+    int getMatrizJ();
 
 
 
@@ -35,6 +38,9 @@ private:
     string _imagen;
     matrizPixeles *matrizLectura;
     int _errores;
+
+    int matrizJ;
+    int matrizI;
 
 
 

@@ -21,6 +21,7 @@ reconstructorImagen::reconstructorImagen(QWidget *parent, string pImagen):
     ui(new Ui::reconstructorImagen)
 {
     ui->setupUi(this);
+
     _imagen = pImagen;
     descomponerImagen();
     detectorFallos();
@@ -94,7 +95,7 @@ int reconstructorImagen::getErrores()
     return _errores;
 }
 
-void reconstructorImagen::arreglarImagen()
+unsigned char reconstructorImagen::arreglarImagen()
 {
     //Codigo para arreglar la imagen
 
@@ -109,23 +110,38 @@ void reconstructorImagen::arreglarImagen()
             bits[i][j + 2] = matrizLectura->getPos(i,j2)->getRed();
             j2++;
 
-
-
         }
         j2 = 0;
-
     }
+    qDebug() << "Termine de reconstruir la imagen" ;
+
+    matrizI = matrizLectura->getAnchoI();
+    matrizJ = matrizLectura->getLargoJ();
+
+    return bits[matrizLectura->getAnchoI()][matrizLectura->getLargoJ() *3];
+
+//    Mat image(matrizLectura->getAnchoI(),matrizLectura->getLargoJ(), CV_8UC3, bits);
+//    cv::imwrite("test.jpg",image);
+//    CVImageWidget* imageWidget = new CVImageWidget();
+//    QMainWindow *popup = new QMainWindow();
+//    popup->setCentralWidget(imageWidget);
+//    imageWidget->showImage(image);
+//    popup->show();
 
 
-    Mat image(matrizLectura->getAnchoI(),matrizLectura->getLargoJ(), CV_8UC3, bits);
-    cv::imwrite("test.jpg",image);
-    CVImageWidget* imageWidget = new CVImageWidget();
-    QMainWindow *popup = new QMainWindow();
-    popup->setCentralWidget(imageWidget);
-    imageWidget->showImage(image);
-    popup->show();
+}
 
 
+
+int reconstructorImagen::getMatrizI()
+{
+    return matrizI;
+
+}
+
+int reconstructorImagen::getMatrizJ()
+{
+    return matrizJ;
 }
 
 
