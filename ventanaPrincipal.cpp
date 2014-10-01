@@ -87,9 +87,9 @@ void ventanaPrincipal::ventanaMostrado()
     image = reconstructor->arreglarImagen();
     cv::imwrite("test.jpg",image);
 
-    QPixmap newpix("C:/new.png");
-    QPixmap openpix("C:/open.png");
-    QPixmap quitpix("C:/quit.png");
+    QPixmap newpix(":/recursos/new.png");
+    QPixmap openpix(":/recursos/open.png");
+    QPixmap quitpix(":/recursos/quit.png");
 
     QToolBar *toolbar = addToolBar("ToolBar");
     toolbar->addAction(QIcon(newpix), "New File");
