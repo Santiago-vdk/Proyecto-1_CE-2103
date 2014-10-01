@@ -18,6 +18,10 @@ public:
     void recorrer2();
     void recorrer3();
     void recorrer4();
+    void recorrer5();
+    void recorrer6();
+    void recorrer7();
+    void recorrer8();
     void pintar(int i, int j);
     int CantidadBlancos();
 
@@ -38,6 +42,14 @@ private:
     int _recorrido3J;
     int _recorrido4I;
     int _recorrido4J;
+    int _recorrido5I;
+    int _recorrido5J;
+    int _recorrido6I;
+    int _recorrido6J;
+    int _recorrido7I;
+    int _recorrido7J;
+    int _recorrido8I;
+    int _recorrido8J;
 
 
 };
