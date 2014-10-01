@@ -126,8 +126,6 @@ void reconstructorImagen::arreglarImagen()
     popup->show();
 
 
-
-
 }
 
 
