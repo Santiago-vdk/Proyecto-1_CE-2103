@@ -60,7 +60,7 @@ void pixel::setGreen(int green)
 }
 void pixel::setBlue(int blue)
 {
-    _Red=blue;
+    _Blue=blue;
 }
 
 
