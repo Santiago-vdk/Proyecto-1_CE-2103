@@ -46,9 +46,15 @@ void reconstructorImagen::descomponerImagen()
 
     for(int i = 0; i < img.rows ;i++){
             for(int j = 0; j < img.cols ;j++){
+
+
+
                 b = input[img.step[0] * i + img.step[1] * j ];
                 g = input[img.step[0] * i + img.step[1] * j + 1] ;
                 r = input[img.step[0] * i + img.step[1] * j + 2] ;
+
+
+
                 pixel *Pixel = new pixel(r,g,b);
                 matrizLectura->insertarPos(i,j, Pixel);
             }
@@ -91,19 +97,25 @@ int reconstructorImagen::getErrores()
 void reconstructorImagen::arreglarImagen()
 {
     //Codigo para arreglar la imagen
+
     matrizLectura->corregirMatriz();
     int j2 =0;
     unsigned char bits[matrizLectura->getAnchoI()][matrizLectura->getLargoJ() *3];
     for(int i = 0; i < matrizLectura->getAnchoI(); i++){
         for(int j = 0; j < matrizLectura->getLargoJ() * 3; j+=3){
+
             bits[i][j + 0] = matrizLectura->getPos(i,j2)->getBlue();
             bits[i][j + 1] = matrizLectura->getPos(i,j2)->getGreen();
             bits[i][j + 2] = matrizLectura->getPos(i,j2)->getRed();
             j2++;
+
+
+
         }
         j2 = 0;
 
     }
+
 
     Mat image(matrizLectura->getAnchoI(),matrizLectura->getLargoJ(), CV_8UC3, bits);
     cv::imwrite("test.jpg",image);
