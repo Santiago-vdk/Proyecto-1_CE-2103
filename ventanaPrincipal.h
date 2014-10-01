@@ -31,6 +31,8 @@ private slots:
     void popupCancelar();
     void popupCorregir();
 
+    void guardarImagen();
+
 private:
     Ui::ventanaPrincipal *ui;
     QDir directory;
@@ -38,6 +40,7 @@ private:
     reconstructorImagen *reconstructor;
     QDialog *popupDialogReconstruir;
     QPushButton *botonCorregir;
+    Mat _image;
 
 
 };

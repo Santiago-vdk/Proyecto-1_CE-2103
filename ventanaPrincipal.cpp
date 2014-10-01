@@ -85,7 +85,8 @@ void ventanaPrincipal::ventanaMostrado()
 {
     Mat image;
     image = reconstructor->arreglarImagen();
-    cv::imwrite("test.jpg",image);
+
+    _image = image;
 
     QPixmap newpix(":/recursos/new.png");
     QPixmap openpix(":/recursos/open.png");
@@ -93,20 +94,14 @@ void ventanaPrincipal::ventanaMostrado()
     QPixmap quitpix(":/recursos/quit.png");
 
     QToolBar *toolbar = addToolBar("ToolBar");
-    toolbar->addAction(QIcon(newpix), "New File");
-    toolbar->addAction(QIcon(openpix), "Open File");
-    toolbar->addAction(QIcon(savepix), "Save File");
+    //toolbar->addAction(QIcon(newpix), "New File");
+    //toolbar->addAction(QIcon(openpix), "Open File");
+    QAction *save = toolbar->addAction(QIcon(savepix),"Save Image");
     toolbar->addSeparator();
-    QAction *quit = toolbar->addAction(QIcon(quitpix),
-        "Quit Application");
-
-//    QAction *save = toolbar->addAction(QIcon(savepix),
-//        "Quit Application");
-
-
+    QAction *quit = toolbar->addAction(QIcon(quitpix),"Quit Application");
 
     connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
-
+    connect(save, SIGNAL(triggered()), this, SLOT(guardarImagen()));
 
     CVImageWidget* imageWidget = new CVImageWidget;
     QMainWindow *popup = new QMainWindow();
@@ -125,7 +120,6 @@ void ventanaPrincipal::ventanaMostrado()
     imageWidget->showImage(image);
 
     popup->show();
-
 }
 
 ventanaPrincipal::~ventanaPrincipal()
@@ -133,11 +127,8 @@ ventanaPrincipal::~ventanaPrincipal()
     delete ui;
 }
 
-
-
 void ventanaPrincipal::on_pushButton_2_clicked()
 {
-    //this->close();
     reconstructor = new reconstructorImagen(0,imagen );
     //reconstructor->setVisible(true);
     ui->labelCargar->setText("Lectura Lista");
@@ -154,4 +145,9 @@ void ventanaPrincipal::popupCorregir()
     ventanaMostrado();
     popupDialogReconstruir->close();
 
+}
+
+void ventanaPrincipal::guardarImagen()
+{
+    cv::imwrite("test.jpg",_image);
 }
