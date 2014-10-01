@@ -13,6 +13,7 @@ TEMPLATE = app
 
 
 INCLUDEPATH += C:\QtSDK\opencv\opencv-build\install\include
+#LIBS += "C:\QtSDK\opencv\opencv-build\bin\*.dll"
 LIBS += -LC:\\QtSDK\opencv\\opencv-build\\bin \
     libopencv_videostab249d \
     libopencv_superres249d \
@@ -45,7 +46,8 @@ HEADERS  += \
     pixel.h \
     matrizPixeles.h \
     nodoPixel.h \
-    listaPixel.h
+    listaPixel.h \
+    CVImageWidget.h
 
 FORMS    += \
     ventanaPrincipal.ui \
