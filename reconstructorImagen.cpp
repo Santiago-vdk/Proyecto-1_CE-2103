@@ -95,7 +95,7 @@ int reconstructorImagen::getErrores()
     return _errores;
 }
 
-unsigned char reconstructorImagen::arreglarImagen()
+Mat reconstructorImagen::arreglarImagen()
 {
     //Codigo para arreglar la imagen
 
@@ -118,9 +118,12 @@ unsigned char reconstructorImagen::arreglarImagen()
     matrizI = matrizLectura->getAnchoI();
     matrizJ = matrizLectura->getLargoJ();
 
-    return bits[matrizLectura->getAnchoI()][matrizLectura->getLargoJ() *3];
+    Mat image(matrizLectura->getAnchoI(),matrizLectura->getLargoJ(), CV_8UC3, bits);
+    return image.clone();
 
-//    Mat image(matrizLectura->getAnchoI(),matrizLectura->getLargoJ(), CV_8UC3, bits);
+
+
+
 //    cv::imwrite("test.jpg",image);
 //    CVImageWidget* imageWidget = new CVImageWidget();
 //    QMainWindow *popup = new QMainWindow();

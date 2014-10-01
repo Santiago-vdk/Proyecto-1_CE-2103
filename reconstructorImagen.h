@@ -7,9 +7,12 @@
 #include "pixel.h"
 #include <matrizPixeles.h>
 #include <QProgressBar>
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv/cv.h"
 
 
-
+using namespace cv;
 using namespace std;
 
 namespace Ui {
@@ -26,7 +29,7 @@ public:
     void descomponerImagen();
     bool detectorFallos();
     int getErrores();
-    unsigned char arreglarImagen();
+    Mat arreglarImagen();
 
     int getMatrizI();
     int getMatrizJ();
@@ -38,7 +41,6 @@ private:
     string _imagen;
     matrizPixeles *matrizLectura;
     int _errores;
-
     int matrizJ;
     int matrizI;
 
