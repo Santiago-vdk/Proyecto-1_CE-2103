@@ -76,6 +76,14 @@ void matrizPixeles::corregirMatriz()
     _recorrido3J = 0;
     _recorrido4I = _anchoI-1;
     _recorrido4J = _largoJ-1;
+    _recorrido5I = 0;
+    _recorrido5J = 0;
+    _recorrido6I = 0;
+    _recorrido6J = _largoJ-1;
+    _recorrido7I = _anchoI-1;
+    _recorrido7J = 0;
+    _recorrido8I = _anchoI-1;
+    _recorrido8J = _largoJ-1;
 
     while(contador>0){
         if(i==0){
@@ -97,8 +105,34 @@ void matrizPixeles::corregirMatriz()
              else{
              if(i==3){
                 recorrer4();
-                i=0;
+                i++;
             }
+             else{
+                 if(i==4){
+                    recorrer5();
+                    i++;
+                }
+                 else{
+                     if(i==5){
+                        recorrer6();
+                        i++;
+                    }
+                     else{
+                         if(i==6){
+                            recorrer7();
+                            i++;
+                        }
+                         else{
+                             if(i==7){
+                                recorrer8();
+                                i=0;
+                            }
+                         }
+                     }
+                 }
+             }
+
+
              }
             }
     }
@@ -112,7 +146,6 @@ void matrizPixeles::recorrer1()
     while(_recorrido1I<_anchoI){
         while(_recorrido1J<_largoJ){
             if(getPos(_recorrido1I,_recorrido1J)->esBlanco()){
-
                 break;
             }
            _recorrido1J++;
@@ -191,22 +224,117 @@ void matrizPixeles::recorrer4()
     pintar(_recorrido4I,_recorrido4J);
 }
 
+void matrizPixeles::recorrer5()
+{
+    while(_recorrido5J<_largoJ-1){
+        while(_recorrido5I<_anchoI-1){
+            if(getPos(_recorrido5I,_recorrido5J)->esBlanco()){
+                break;
+            }
+            _recorrido5I++;
+
+        }
+
+        if((_recorrido5I<_anchoI-1)&&(getPos(_recorrido5I,_recorrido5J)->esBlanco())){
+            break;
+        }
+        _recorrido5J++;
+        _recorrido5I =0;
+    }
+    pintar(_recorrido5I,_recorrido5J);
+}
+
+void matrizPixeles::recorrer6()
+{
+    while(_recorrido6J>-1){
+        while(_recorrido6I<_anchoI-1){
+            if(getPos(_recorrido6I,_recorrido6J)->esBlanco()){
+                break;
+            }
+            _recorrido6I++;
+
+        }
+
+        if((_recorrido6I>-1)&&(getPos(_recorrido6I,_recorrido6J)->esBlanco())){
+            break;
+        }
+        _recorrido6J--;
+        _recorrido6I =0;
+    }
+    pintar(_recorrido6I,_recorrido6J);
+}
+
+void matrizPixeles::recorrer7()
+{
+    while(_recorrido7J<_anchoI-1){
+        while(_recorrido7I>-1){
+            if(getPos(_recorrido7I,_recorrido7J)->esBlanco()){
+                break;
+            }
+            _recorrido7I--;
+
+        }
+
+        if((_recorrido7I>-1)&&(getPos(_recorrido7I,_recorrido7J)->esBlanco())){
+            break;
+        }
+        _recorrido7J++;
+        _recorrido7I =_anchoI-1;
+    }
+    pintar(_recorrido7I,_recorrido7J);
+}
+
+void matrizPixeles::recorrer8()
+{
+    while(_recorrido8J>-1){
+        while(_recorrido8I>-1){
+            if(getPos(_recorrido8I,_recorrido8J)->esBlanco()){
+                break;
+            }
+            _recorrido8I--;
+
+        }
+
+        if((_recorrido8I>-1)&&(getPos(_recorrido8I,_recorrido8J)->esBlanco())){
+            break;
+        }
+        _recorrido8J--;
+        _recorrido8I =_anchoI-1;
+    }
+    pintar(_recorrido8I,_recorrido8J);
+}
+
+
 void matrizPixeles::pintar(int i, int j)
 {
 
     listaPixel * adyacentesNoBlancos = new listaPixel();
-    if((i>0) && (!getPos(i-1,j)->esBlanco())){
+    if((i>0) && !(getPos(i-1,j)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i-1,j));
     }
-    if((i<_anchoI-1) && (!getPos(i+1,j)->esBlanco())){
+    if((i<_anchoI-1) && !(getPos(i+1,j)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i+1,j));
     }
-    if((j>0) && (!getPos(j-1,j)->esBlanco())){
+    if((j>0) && !(getPos(j-1,j)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i,j-1));
     }
-    if((j<_largoJ-1)&&(!getPos(j+1,j)->esBlanco())){
+    if((j<_largoJ-1)&&!(getPos(j+1,j)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i,j+1));
     }
+    if((i>0)&&(j>0)&&!(getPos(i-1,j-1)->esBlanco())){
+        adyacentesNoBlancos->insertarFinal(getPos(i-1,j-1));
+    }
+    if((i>0)&&(j<_largoJ-1)&&!(getPos(i-1,j+1)->esBlanco())){
+        adyacentesNoBlancos->insertarFinal(getPos(i-1,j+1));
+    }
+    if((i<_anchoI-1)&&(j>0)&&!(getPos(i+1,j-1)->esBlanco())){
+        adyacentesNoBlancos->insertarFinal(getPos(i+1,j-1));
+    }
+    if((i<_anchoI-1)&&(j<_largoJ-1)&&!(getPos(i-1,j+1)->esBlanco())){
+        adyacentesNoBlancos->insertarFinal(getPos(i-1,j+1));
+    }
+
+
 
     int red=0;
     int green=0;
@@ -223,10 +351,12 @@ void matrizPixeles::pintar(int i, int j)
         blue+=adyacentesNoBlancos->getPos(a)->getPixel()->getBlue();
         }
     }
-    //std::cout <<"total"<< red << std::endl;
-    red=(red/adyacentesNoBlancos->getTamanio());
-    green=(green/adyacentesNoBlancos->getTamanio());
-    blue=(blue/adyacentesNoBlancos->getTamanio());
+    //std::cout <<"total"<< red <<","<<green<<","<<blue<<  std::endl;
+    //std::cout <<"adyacentes"<<adyacentesNoBlancos->getTamanio()<< std::endl;
+
+    red=(red/(adyacentesNoBlancos->getTamanio()-1));
+    green=(green/(adyacentesNoBlancos->getTamanio()-1));
+    blue=(blue/(adyacentesNoBlancos->getTamanio()-1));
 
 
     getPos(i,j)->setRed(red);
