@@ -120,18 +120,6 @@ Mat reconstructorImagen::arreglarImagen()
 
     Mat image(matrizLectura->getAnchoI(),matrizLectura->getLargoJ(), CV_8UC3, bits);
     return image.clone();
-
-
-
-
-//    cv::imwrite("test.jpg",image);
-//    CVImageWidget* imageWidget = new CVImageWidget();
-//    QMainWindow *popup = new QMainWindow();
-//    popup->setCentralWidget(imageWidget);
-//    imageWidget->showImage(image);
-//    popup->show();
-
-
 }
 
 

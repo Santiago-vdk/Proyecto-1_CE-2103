@@ -1,7 +1,6 @@
 #ifndef LISTAPIXEL_H
 #define LISTAPIXEL_H
 #include <nodoPixel.h>
-
 #include <pixel.h>
 
 class listaPixel
