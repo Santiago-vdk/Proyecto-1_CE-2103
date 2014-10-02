@@ -352,8 +352,6 @@ void matrizPixeles::pintar(int i, int j)
         blue+=adyacentesNoBlancos->getPos(a)->getPixel()->getBlue();
         }
     }
-    //std::cout <<"total"<< red <<","<<green<<","<<blue<<  std::endl;
-    std::cout <<"adyacentes"<<adyacentesNoBlancos->getTamanio()<< std::endl;
 
     red=(red/(adyacentesNoBlancos->getTamanio()));
     green=(green/(adyacentesNoBlancos->getTamanio()));
