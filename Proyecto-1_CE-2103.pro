@@ -31,7 +31,7 @@ TEMPLATE = app
 #    libopencv_imgproc249d \
 #    libopencv_core249d \
 
-Rafa
+#Rafa
 INCLUDEPATH += C:\QtSDK\opencv-build\install\include
 LIBS += -LC:\\QtSDK\\opencv-build\\bin \
     libopencv_videostab249 \
@@ -63,10 +63,12 @@ SOURCES += main.cpp \
     listaPixel.cpp \
     figura.cpp \
     listaFigura.cpp \
-    nodoFigura.cpp
+    nodoFigura.cpp \
     CameraWidget.cpp \
     CameraWindow.cpp \
-    ventanaAprendizaje.cpp
+    ventanaAprendizaje.cpp \
+    Facade.cpp
+
 HEADERS  += \
     ventanaPrincipal.h \
     reconstructorImagen.h \
@@ -77,10 +79,11 @@ HEADERS  += \
     CVImageWidget.h \
     figura.h \
     listafigura.h \
-    nodoFigura.h
+    nodoFigura.h \
     CameraWidget.h \
     CameraWindow.h \
-    ventanaAprendizaje.h
+    ventanaAprendizaje.h \
+    Facade.h
 
 FORMS    += \
     ventanaPrincipal.ui \
