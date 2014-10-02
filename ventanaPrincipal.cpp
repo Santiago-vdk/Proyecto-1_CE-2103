@@ -15,6 +15,8 @@
 #include <QToolBar>
 #include <QIcon>
 #include <QAction>
+#include <ventanaAprendizaje.h>
+#include <QMessageBox>
 
 
 
@@ -26,20 +28,19 @@ ventanaPrincipal::ventanaPrincipal(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->pushButton_2->setDisabled(true);
+    this->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
+    banderaPrimeraCorrida  = true;
+    banderaGuardado  = false;
 
 }
 
 void ventanaPrincipal::on_pushButton_clicked()
 {
     QString path = QFileDialog::getOpenFileName(this, tr("Directory"), directory.path(), tr("JPEG (*.jpg *.jpeg);;PNG (*.png);;BMP (*.bmp)"));
-
     if ( path.isNull() == false )
     {
-
         directory.setPath(path);
-
     }
-
     imagen = directory.path().toStdString();
     cout << imagen << endl;
     ui->labelCargar->setText("Imagen Cargada!");
@@ -48,7 +49,11 @@ void ventanaPrincipal::on_pushButton_clicked()
 
 void ventanaPrincipal::ventanaRevisado()
 {
-    ui->pushButton_2->setDisabled(true);
+    if (!banderaPrimeraCorrida){
+        ui->pushButton_2->setDisabled(true);
+        this->close();
+    }
+
 
     int blancos = reconstructor->getErrores();
     QString blanc = QString::number(blancos);
@@ -79,7 +84,15 @@ void ventanaPrincipal::ventanaRevisado()
         botonCorregir->setDisabled(true);
         botonCorregir->setText("Sin Errores");
     }
+
+
+
+
+
 }
+
+
+
 
 void ventanaPrincipal::ventanaMostrado()
 {
@@ -95,6 +108,7 @@ void ventanaPrincipal::ventanaMostrado()
 
     QToolBar *toolbar = addToolBar("ToolBar");
     //toolbar->addAction(QIcon(newpix), "New File");
+    QAction *niw = toolbar->addAction(QIcon(newpix),"New Image");
     //toolbar->addAction(QIcon(openpix), "Open File");
     QAction *save = toolbar->addAction(QIcon(savepix),"Save Image");
     toolbar->addSeparator();
@@ -102,24 +116,25 @@ void ventanaPrincipal::ventanaMostrado()
 
     connect(quit, SIGNAL(triggered()), qApp, SLOT(quit()));
     connect(save, SIGNAL(triggered()), this, SLOT(guardarImagen()));
+    connect(niw, SIGNAL(triggered()), this, SLOT(nuevaImagen()));
 
     CVImageWidget* imageWidget = new CVImageWidget;
-    QMainWindow *popup = new QMainWindow();
+    ventanaReconstructor = new QMainWindow();
 
-    QWidget *mainWidget = new QWidget(popup);
+    QWidget *mainWidget = new QWidget(ventanaReconstructor);
 
     QVBoxLayout *layout = new QVBoxLayout;
 
     layout->addWidget(imageWidget);
 
-    popup->addToolBar(toolbar);
+   ventanaReconstructor->addToolBar(toolbar);
 
     mainWidget->setLayout(layout);
-    popup->setCentralWidget(mainWidget);
+    ventanaReconstructor->setCentralWidget(mainWidget);
 
     imageWidget->showImage(image);
 
-    popup->show();
+    ventanaReconstructor->show();
 }
 
 ventanaPrincipal::~ventanaPrincipal()
@@ -127,10 +142,24 @@ ventanaPrincipal::~ventanaPrincipal()
     delete ui;
 }
 
+void ventanaPrincipal::nuevaReconstruccion()
+{
+
+    QString path = QFileDialog::getOpenFileName(this, tr("Directory"), directory.path(), tr("JPEG (*.jpg *.jpeg);;PNG (*.png);;BMP (*.bmp)"));
+    if ( path.isNull() == false )
+    {
+        directory.setPath(path);
+    }
+    imagen = directory.path().toStdString();
+    cout << imagen << endl;
+
+    reconstructor = new reconstructorImagen(0,imagen);
+    ventanaRevisado();
+}
+
 void ventanaPrincipal::on_pushButton_2_clicked()
 {
-    reconstructor = new reconstructorImagen(0,imagen );
-    //reconstructor->setVisible(true);
+    reconstructor = new reconstructorImagen(0,imagen);
     ui->labelCargar->setText("Lectura Lista");
     ventanaRevisado();
 }
@@ -149,5 +178,43 @@ void ventanaPrincipal::popupCorregir()
 
 void ventanaPrincipal::guardarImagen()
 {
-    cv::imwrite("test.jpg",_image);
+    cv::imwrite("Guardada.jpg",_image);
+    banderaGuardado = true;
+}
+
+
+
+void ventanaPrincipal::on_buttonAprendizaje_clicked()
+{
+    this->close();
+    ventanaAprendizaje *ventAprendizaje = new ventanaAprendizaje();
+    ventAprendizaje->show();
+}
+
+void ventanaPrincipal::nuevaImagen()
+{
+    if ( !banderaGuardado )
+      {
+      switch  (	QMessageBox::warning(
+          this, "Su imagen no ha sido guardada",
+          "Su imagen anterior fue reconstruida, pero no guardada\n"
+          "Si continua, perdera la imagen anterior.\n"
+          "Continuar?",
+          "&Guardar y continuar", "&Cancelar", QString::null, 1, 1 )  )
+      {
+      case 0:
+          guardarImagen();
+          banderaPrimeraCorrida = false;
+          banderaGuardado = false;
+          ventanaReconstructor->close();
+          nuevaReconstruccion();
+          break;
+      default:
+          break;
+      }
+      }
+    else{
+        ventanaReconstructor->close();
+        nuevaReconstruccion();
+    }
 }

@@ -21,6 +21,7 @@ class ventanaPrincipal : public QMainWindow
 public:
     explicit ventanaPrincipal(QWidget *parent = 0);
     ~ventanaPrincipal();
+    void nuevaReconstruccion();
 
 private slots:
     void on_pushButton_clicked();
@@ -33,6 +34,12 @@ private slots:
 
     void guardarImagen();
 
+    void on_buttonAprendizaje_clicked();
+
+    void nuevaImagen();
+
+
+
 private:
     Ui::ventanaPrincipal *ui;
     QDir directory;
@@ -41,6 +48,9 @@ private:
     QDialog *popupDialogReconstruir;
     QPushButton *botonCorregir;
     Mat _image;
+    QMainWindow *ventanaReconstructor;
+    bool banderaPrimeraCorrida;
+    bool banderaGuardado;
 
 
 };
