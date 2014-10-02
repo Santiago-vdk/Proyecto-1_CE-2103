@@ -21,12 +21,9 @@ reconstructorImagen::reconstructorImagen(QWidget *parent, string pImagen):
     ui(new Ui::reconstructorImagen)
 {
     ui->setupUi(this);
-
     _imagen = pImagen;
     descomponerImagen();
     detectorFallos();
-
-
 }
 
 
@@ -47,14 +44,9 @@ void reconstructorImagen::descomponerImagen()
 
     for(int i = 0; i < img.rows ;i++){
             for(int j = 0; j < img.cols ;j++){
-
-
-
                 b = input[img.step[0] * i + img.step[1] * j ];
                 g = input[img.step[0] * i + img.step[1] * j + 1] ;
                 r = input[img.step[0] * i + img.step[1] * j + 2] ;
-
-
 
                 pixel *Pixel = new pixel(r,g,b);
                 matrizLectura->insertarPos(i,j, Pixel);
