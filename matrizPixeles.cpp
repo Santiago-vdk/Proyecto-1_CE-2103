@@ -97,45 +97,45 @@ void matrizPixeles::corregirMatriz()
             }
             else{
 
-             if(i==2){
+                if(i==2){
 
-                recorrer3();
-                i++;
-            }
-             else{
-             if(i==3){
-                recorrer4();
-                i++;
-            }
-             else{
-                 if(i==4){
-                    recorrer5();
+                    recorrer3();
                     i++;
                 }
-                 else{
-                     if(i==5){
-                        recorrer6();
+                else{
+                    if(i==3){
+                        recorrer4();
                         i++;
                     }
-                     else{
-                         if(i==6){
-                            recorrer7();
+                    else{
+                        if(i==4){
+                            recorrer5();
                             i++;
                         }
-                         else{
-                             if(i==7){
-                                recorrer8();
-                                i=0;
+                        else{
+                            if(i==5){
+                                recorrer6();
+                                i++;
                             }
-                         }
-                     }
-                 }
-             }
+                            else{
+                                if(i==6){
+                                    recorrer7();
+                                    i++;
+                                }
+                                else{
+                                    if(i==7){
+                                        recorrer8();
+                                        i=0;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
 
-             }
+                }
             }
-    }
+        }
         contador--;
     }
 
