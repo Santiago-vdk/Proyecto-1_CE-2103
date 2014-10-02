@@ -51,16 +51,6 @@ nodoFigura*listaFigura::getTail()
     return _tail;
 }
 
-listaFigura* listaFigura::getNext()
-{
-    return _next;
-}
-
-listaFigura* listaFigura::getPrev()
-{
-    return _prev;
-}
-
 int listaFigura::getTamanio()
 {
     return _tamanio;
@@ -75,6 +65,15 @@ nodoFigura *listaFigura::getPos(int i)
     return tmp;
 }
 
+nodoFigura *listaFigura::buscarIndice(int vertices)
+{
+    nodoFigura *tmp= _head;
+    while((tmp!=NULL)&&(tmp->getFigura()->getVertices()!=vertices)){
+        tmp=tmp->getFiguraNext();
+    }
+    return tmp;
+}
+
 void listaFigura::setHead(nodoFigura *pHead)
 {
     _head = pHead;
@@ -83,15 +82,5 @@ void listaFigura::setHead(nodoFigura *pHead)
 void listaFigura::setTail(nodoFigura *pTail)
 {
     _tail = pTail;
-}
-
-void listaFigura::setNext(listaFigura *pNext)
-{
-    _next = pNext;
-}
-
-void listaFigura::setPrev(listaFigura* pPrev)
-{
-    _prev = pPrev;
 }
 
