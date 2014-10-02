@@ -1,5 +1,3 @@
-
-
 #pragma once
 #include <QWidget>
 #include <QImage>
