@@ -61,7 +61,10 @@ SOURCES += main.cpp \
     matrizPixeles.cpp \
     nodoPixel.cpp \
     listaPixel.cpp \
-    toolbar.cpp
+    toolbar.cpp \
+    CameraWidget.cpp \
+    CameraWindow.cpp \
+    ventanaAprendizaje.cpp
 
 HEADERS  += \
     ventanaPrincipal.h \
@@ -71,11 +74,15 @@ HEADERS  += \
     nodoPixel.h \
     listaPixel.h \
     CVImageWidget.h \
-    toolbar.h
+    toolbar.h \
+    CameraWidget.h \
+    CameraWindow.h \
+    ventanaAprendizaje.h
 
 FORMS    += \
     ventanaPrincipal.ui \
-    reconstructorImagen.ui
+    reconstructorImagen.ui \
+    ventanaaprendizaje.ui
 
 CONFIG += console
 
