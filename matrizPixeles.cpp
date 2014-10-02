@@ -164,6 +164,7 @@ void matrizPixeles::recorrer1()
 }
 void matrizPixeles::recorrer2()
 {
+
     while(_recorrido2I<_anchoI){
         while(_recorrido2J>-1){
             if(getPos(_recorrido2I,_recorrido2J)->esBlanco()){
@@ -315,12 +316,13 @@ void matrizPixeles::pintar(int i, int j)
     if((i<_anchoI-1) && !(getPos(i+1,j)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i+1,j));
     }
-    if((j>0) && !(getPos(j-1,j)->esBlanco())){
+    if((j>0) && !(getPos(i,j-1)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i,j-1));
     }
-    if((j<_largoJ-1)&&!(getPos(j+1,j)->esBlanco())){
+    if((j<_largoJ-1)&&!(getPos(i,j+1)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i,j+1));
     }
+
     if((i>0)&&(j>0)&&!(getPos(i-1,j-1)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i-1,j-1));
     }
@@ -333,7 +335,6 @@ void matrizPixeles::pintar(int i, int j)
     if((i<_anchoI-1)&&(j<_largoJ-1)&&!(getPos(i-1,j+1)->esBlanco())){
         adyacentesNoBlancos->insertarFinal(getPos(i-1,j+1));
     }
-
 
 
     int red=0;
@@ -351,12 +352,10 @@ void matrizPixeles::pintar(int i, int j)
         blue+=adyacentesNoBlancos->getPos(a)->getPixel()->getBlue();
         }
     }
-    //std::cout <<"total"<< red <<","<<green<<","<<blue<<  std::endl;
-    //std::cout <<"adyacentes"<<adyacentesNoBlancos->getTamanio()<< std::endl;
 
-    red=(red/(adyacentesNoBlancos->getTamanio()-1));
-    green=(green/(adyacentesNoBlancos->getTamanio()-1));
-    blue=(blue/(adyacentesNoBlancos->getTamanio()-1));
+    red=(red/(adyacentesNoBlancos->getTamanio()));
+    green=(green/(adyacentesNoBlancos->getTamanio()));
+    blue=(blue/(adyacentesNoBlancos->getTamanio()));
 
 
     getPos(i,j)->setRed(red);
