@@ -22,7 +22,7 @@ CameraWindow::CameraWindow(CvCapture *cam, QWidget *parent)
     setLayout(layout);
     resize(800, 700);
 
-   connect(button, SIGNAL(pressed()), this, SLOT(savePicture()));
+   connect(button, SIGNAL(clicked()), this, SLOT(savePicture()));
 
     startTimer(100);  // 0.1-second timer
 }
