@@ -63,6 +63,32 @@
     </rect>
    </property>
   </widget>
+  <widget class="QPushButton" name="botonSi">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>230</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Si</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="botonNo">
+   <property name="geometry">
+    <rect>
+     <x>730</x>
+     <y>230</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>No</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
