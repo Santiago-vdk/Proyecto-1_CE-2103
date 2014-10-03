@@ -11,11 +11,15 @@
 
 #include <QTextEdit>
 #include <QLineEdit>
-
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include <iostream>
+#include <stdio.h>
 
 
 using namespace Qt;
 using namespace std;
+using namespace cv;
 
 ventanaAprendizaje::ventanaAprendizaje(QWidget *parent) :
     QWidget(parent),
@@ -23,8 +27,7 @@ ventanaAprendizaje::ventanaAprendizaje(QWidget *parent) :
 {
     ui->setupUi(this);
     camera = cvCreateCameraCapture(0);
-    IplImage *image = cvQueryFrame(camera);
-    assert(image);
+    cvQueryFrame(camera);
     QVBoxLayout *layout = new QVBoxLayout;
 
     windowCamara = new CameraWindow(camera,0);
@@ -100,6 +103,41 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             cvLine(img, *pt[0], *pt[1], cvScalar(255,0,0),4);
             cvLine(img, *pt[1], *pt[2], cvScalar(255,0,0),4);
             cvLine(img, *pt[2], *pt[0], cvScalar(255,0,0),4);
+
+        }
+        if (fabs(cvContourArea(result, CV_WHOLE_SEQ))>100){
+            Mat src, src_gray;
+
+            /// Read the image
+            src = imread(str, 1 );
+
+
+
+            /// Convert it to gray
+            cvtColor( src, src_gray, CV_BGR2GRAY );
+
+            /// Reduce the noise so we avoid false circle detection
+            GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
+
+            vector<Vec3f> circles;
+
+            /// Apply the Hough Transform to find the circles
+            HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 1, src_gray.rows/8, 200, 100, 0, 0 );
+
+            /// Draw the circles detected
+            for( size_t i = 0; i < circles.size(); i++ )
+            {
+                Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+                int radius = cvRound(circles[i][2]);
+                // circle center
+                circle( src, center, 3, Scalar(0,255,0), -1, 8, 0 );
+                // circle outline
+                circle( src, center, radius, Scalar(0,0,255), 3, 8, 0 );
+             }
+
+            /// Show your results
+            namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
+            imshow( "Hough Circle Transform Demo", src );
 
         }
 
