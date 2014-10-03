@@ -24,10 +24,14 @@ private:
     CvCapture *m_camera;
     int m_photoCounter;
     std::string _ultimaImagen;
+
+    QPushButton *botonInterpretar;
+
     bool imagenTomada;
 
 signals:
     void guardeImagen();
+    void interpretaImagen();
 
 
 protected:
@@ -35,6 +39,7 @@ protected:
 
 public slots:
     void savePicture(void);
+    void interpretarImagen(void);
 
 };
 
