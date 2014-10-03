@@ -34,18 +34,19 @@ ventanaAprendizaje::ventanaAprendizaje(QWidget *parent, Facade* pFacade) :
     windowCamara = new CameraWindow(camera,0);
 
     QWidget *widget = new QWidget(this);
-    QPushButton *btn = new QPushButton("Test");
 
     connect(windowCamara, SIGNAL(guardeImagen()), this, SLOT(elSlot()));
+    connect(windowCamara, SIGNAL(interpretaImagen()), this, SLOT(interpretaImagenCompuesta()));
 
     widget->resize(600,600);
-    layout->addWidget(btn);
+
     layout->addWidget(windowCamara);
     widget->setLayout(layout);
 
     ui->botonEnviar->setDisabled(true);
     ui->botonNo->setDisabled(true);
     ui->botonSi->setDisabled(true);
+    ui->botonRecuerdos->setDisabled(true);
 
     //###############################################################
 
@@ -72,12 +73,29 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
     cvNamedWindow("Raw");
     cvShowImage("Raw",img);
 
+
+    //smooth the original image using Gaussian kernel to remove noise
+    cvSmooth(img, img, CV_GAUSSIAN,3,3);
+
+
+
     //converting the original image into grayscale
     IplImage* imgGrayScale = cvCreateImage(cvGetSize(img), 8, 1);
     cvCvtColor(img,imgGrayScale,CV_BGR2GRAY);
 
-    //thresholding the grayscale image to get better results
-    cvThreshold(imgGrayScale,imgGrayScale,128,255,CV_THRESH_BINARY);
+
+    cvNamedWindow("GrayScale Image");
+     cvShowImage("GrayScale Image",imgGrayScale);
+
+
+     //thresholding the grayscale image to get better results
+     cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
+
+     cvNamedWindow("Thresholded Image");
+     cvShowImage("Thresholded Image",imgGrayScale);
+
+
+
 
     CvSeq* contours;  //hold the pointer to a contour in the memory block
     CvSeq* result;   //hold sequence of points of a contour
@@ -90,7 +108,7 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
 
     //iterating through each contour
-    bool banderaDetecte = false;
+    bool banderaDetecteContornos = false;
 
     //while(!banderaDetecte)
     while(contours)
@@ -99,7 +117,7 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
         result = cvApproxPoly(contours, sizeof(CvContour), storage, CV_POLY_APPROX_DP, cvContourPerimeter(contours)*0.02, 0);
 
         //if there are 3  vertices  in the contour(It should be a triangle)
-        if(result->total==3 )
+        if(result->total==3  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
         {
             //iterating through each point
             CvPoint *pt[3];
@@ -114,14 +132,14 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
 
             qDebug() << "Triangulo";
-            banderaDetecte = true;
+            banderaDetecteContornos = true;
+             _vertices = result->total;
             break;
 
         }
 
-
         //if there are 4 vertices in the contour(It should be a quadrilateral)
-        else if(result->total==4 )
+        else if(result->total==4  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
         {
             //iterating through each point
             CvPoint *pt[4];
@@ -137,47 +155,12 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
 
             qDebug() << "Cuadrilatero";
-            banderaDetecte = true;
+            banderaDetecteContornos = true;
+             _vertices = result->total;
             break;
         }
-        if (fabs(cvContourArea(result, CV_WHOLE_SEQ))>100){
-            Mat src, src_gray;
-
-            /// Read the image
-            src = imread(str, 1 );
-
-
-
-            /// Convert it to gray
-            cvtColor( src, src_gray, CV_BGR2GRAY );
-
-            /// Reduce the noise so we avoid false circle detection
-            GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
-
-            vector<Vec3f> circles;
-
-            /// Apply the Hough Transform to find the circles
-            HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 1, src_gray.rows/8, 200, 100, 0, 0 );
-
-            /// Draw the circles detected
-            for( size_t i = 0; i < circles.size(); i++ )
-            {
-                Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-                int radius = cvRound(circles[i][2]);
-                // circle center
-                circle( src, center, 3, Scalar(0,255,0), -1, 8, 0 );
-                // circle outline
-                circle( src, center, radius, Scalar(0,0,255), 3, 8, 0 );
-             }
-
-            /// Show your results
-            namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
-            imshow( "Hough Circle Transform Demo", src );
-
-        }
-
         //if there are 7  vertices  in the contour(It should be a heptagon)
-        else if(result->total ==7  )
+        else if(result->total ==7   && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
         {
             //iterating through each point
             CvPoint *pt[7];
@@ -196,29 +179,87 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
 
             qDebug() << "Heptagono";
-            banderaDetecte = true;
+            banderaDetecteContornos = true;
+             _vertices = result->total;
+
             break;
 
         }
-
-
         //obtain the next contour
         contours = contours->h_next;
     }
 
+    if (!banderaDetecteContornos){
+        qDebug()<< "Aqui";
+        Mat src, src_gray;
+
+        /// Read the image
+        src = imread(cstr, 1 );
+
+        /// Convert it to gray
+        cvtColor( src, src_gray, CV_BGR2GRAY );
+
+        /// Reduce the noise so we avoid false circle detection
+        GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
+
+        vector<Vec3f> circles;
+
+        /// Apply the Hough Transform to find the circles
+        HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 2, src_gray.rows/2, 200, 100);
+
+        /// Draw the circles detected
+        for( size_t i = 0; i < circles.size(); i++ )
+        {
+            Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+            int radius = cvRound(circles[i][2]);
+            // circle center
+            cv::circle( src, center, 3, Scalar(0,255,0), 3);
+            // circle outline
+            cv::circle( src, center, radius, Scalar(0,0,255), 3);
+         }
+
+        /// Show your results
+        cv::namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
+        cv::imshow( "Hough Circle Transform Demo", src );
+         _vertices = -1;
+         banderaDetecteContornos = true;
+
+    }
+
+
+    if (!banderaDetecteContornos){
+        Mat src,dst,cdst;
+
+        /// Read the image
+        src = imread(cstr, 1 );
+
+        Canny(src, dst, 50, 200, 3);
+        cvtColor(dst, cdst, CV_GRAY2BGR);
+
+        vector<Vec4i> lines;
+        HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 10 );
+        for ( size_t i = 0; i < lines.size(); i++ ) {
+            Vec4i l = lines[i];
+            line( cdst, Point(l[0], l[1]),
+                  Point(l[2], l[3]), Scalar(0,0,255),
+                  3, CV_AA);
+        }
+
+        imshow("source", src);
+        imshow("detected lines", cdst);
+
+
+
+
+    }
+
     qDebug() << "Termine procesamiento";
-
-    _vertices = result->total;
-
 
 
     //###############################################################################################
-
     //show the image in which identified shapes are marked
     cvNamedWindow("Tracked");
     cvShowImage("Tracked",img);
-
-
 
     cvWaitKey(0); //wait for a key press
 
@@ -232,21 +273,15 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
     ui->output->setTextColor("red");
     ui->output->append("Ordenador: Como deberia llamar esta forma?");
-
-
-
 }
-
-
 
 void ventanaAprendizaje::elSlot()
 {
     qDebug() << "Se guardo una imagen nueva";
     //Identificacion y abstraccion
     std::string ultimaImagen = windowCamara->getultimaImagen();
-    std::cout <<"ultima imagen"<< ultimaImagen << std::endl;
+    std::cout <<"ultima imagen "<< ultimaImagen << std::endl;
     procesadorImagen(ultimaImagen);
-
 }
 
 
@@ -260,24 +295,20 @@ void ventanaAprendizaje::interaccionPC()
         ui->output->append("Ordenador: Ya conozco esta figura, la vuelvo a aprender?");
         ui->botonSi->setDisabled(false);
         ui->botonNo->setDisabled(false);
-
         qDebug() << "En espera de respuesta";
     }
 
     else{
         ui->output->setTextColor("red");
         ui->output->append("Ordenador: Figura aprendida!");
+        qDebug() << QString::fromStdString (_figuraNombre);
         _facade->aprender(_vertices,_figuraNombre);
         qDebug() << "Aprendi sin problemas";
         _figuraNombre = "";
         _vertices = 0;
+        ui->botonRecuerdos->setDisabled(false);
     }
-
-
-
-
 }
-
 
 ventanaAprendizaje::~ventanaAprendizaje()
 {
@@ -289,14 +320,19 @@ void ventanaAprendizaje::on_botonEnviar_clicked()
 
     ui->output->setTextColor("blue");
     ui->output->append(ui->input->text());
+
+    qDebug()<< ui->input->text();
+
     comando = ui->input->text().toStdString();
     banderaComando = true;
-    procesamientoFinalizado();
+
+    _figuraNombre = comando;
+
+        std::cout << _figuraNombre << std::endl;
+
     ui->botonEnviar->setDisabled(true);
-
+    procesamientoFinalizado();
 }
-
-
 
 void ventanaAprendizaje::on_botonNo_clicked()
 {
@@ -316,5 +352,43 @@ void ventanaAprendizaje::on_botonSi_clicked()
     ui->botonEnviar->setDisabled(true);
     ui->botonSi->setDisabled(true);
 
+}
+
+void ventanaAprendizaje::on_botonRecuerdos_clicked()
+{
+    for(int i=0;i<_facade->cantidadRecuerdos();i++){
+        int Number = _facade->verticesRecuerdo(i);//number to convert int a string
+        string Result;//string which will contain the result
+
+        stringstream convert; // stringstream used for the conversion
+
+        convert << Number;//add the value of Number to the characters in the stream
+        Result = convert.str();//set Result to the content of the stream
+        ui->output->setTextColor("green");
+        ui->output->append("Ordenador: Conozco la figura: " + QString::fromStdString (_facade->nombreRecuerdo(i)) + " que tiene " + QString::fromStdString (Result) + " vertices.");
+    }
+}
+
+void ventanaAprendizaje::interpretaImagenCompuesta()
+{
+
+
+
+
+
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

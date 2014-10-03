@@ -33,11 +33,10 @@ public slots:
 private slots:
     void on_botonEnviar_clicked();
     void interaccionPC();
-
-
     void on_botonNo_clicked();
-
     void on_botonSi_clicked();
+    void on_botonRecuerdos_clicked();
+    void interpretaImagenCompuesta();
 
 signals:
     void procesamientoFinalizado();
