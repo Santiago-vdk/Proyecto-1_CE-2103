@@ -17,6 +17,7 @@
 #include <QAction>
 #include <ventanaAprendizaje.h>
 #include <QMessageBox>
+#include "Facade.h"
 
 
 
@@ -27,6 +28,8 @@ ventanaPrincipal::ventanaPrincipal(QWidget *parent) :
     ui(new Ui::ventanaPrincipal)
 {
     ui->setupUi(this);
+
+    facade = new Facade();
     ui->pushButton_2->setDisabled(true);
     this->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
     banderaPrimeraCorrida  = true;
@@ -84,15 +87,7 @@ void ventanaPrincipal::ventanaRevisado()
         botonCorregir->setDisabled(true);
         botonCorregir->setText("Sin Errores");
     }
-
-
-
-
-
 }
-
-
-
 
 void ventanaPrincipal::ventanaMostrado()
 {
@@ -187,7 +182,7 @@ void ventanaPrincipal::guardarImagen()
 void ventanaPrincipal::on_buttonAprendizaje_clicked()
 {
     this->close();
-    ventanaAprendizaje *ventAprendizaje = new ventanaAprendizaje();
+    ventanaAprendizaje *ventAprendizaje = new ventanaAprendizaje(0,facade);
     ventAprendizaje->show();
 }
 

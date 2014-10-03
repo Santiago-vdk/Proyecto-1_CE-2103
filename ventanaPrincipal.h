@@ -7,6 +7,8 @@
 #include <reconstructorImagen.h>
 #include <QPushButton>
 
+#include <Facade.h>
+
 
 using namespace std;
 
@@ -51,6 +53,7 @@ private:
     QMainWindow *ventanaReconstructor;
     bool banderaPrimeraCorrida;
     bool banderaGuardado;
+    Facade *facade;
 
 
 };
