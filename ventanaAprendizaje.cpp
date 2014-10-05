@@ -65,6 +65,17 @@ ventanaAprendizaje::ventanaAprendizaje(QWidget *parent, Facade* pFacade) :
     banderaComando = false;
 
     connect(this, SIGNAL(procesamientoFinalizado()), this, SLOT(interaccionPC()));
+
+    ui->output->setTextColor("black");
+
+    ui->output->append("-> Inicializando sistema de aprendizaje");
+    ui->output->append("-> Activando alzheimer");
+    ui->output->append("-> Procesando monos con nanoreceptores");
+    ui->output->append("-> Sistemas listos...");
+    ui->output->append("-> Si.D.A Activado");
+    ui->output->append("-------------------------------");
+
+
 }
 
 void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
@@ -418,44 +429,44 @@ void ventanaAprendizaje::interpretaImagenCompuesta()
         contours = contours->h_next;
     }
 
-//    cv::Mat imgMat = cv::cvarrToMat(imgIpl);
+    //    cv::Mat imgMat = cv::cvarrToMat(imgIpl);
 
-//    Mat src, src_gray;
-//    src = imread(cstr, 1 );
-//    /// Convert it to gray
-//    cvtColor( src, src_gray, CV_BGR2GRAY );
-//    GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
-//    vector<Vec3f> circles;
-//    HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 2, src_gray.rows/2, 200, 100);
+    //    Mat src, src_gray;
+    //    src = imread(cstr, 1 );
+    //    /// Convert it to gray
+    //    cvtColor( src, src_gray, CV_BGR2GRAY );
+    //    GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
+    //    vector<Vec3f> circles;
+    //    HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 2, src_gray.rows/2, 200, 100);
 
-//    /// Draw the circles detected
-//    for( size_t i = 0; i < circles.size(); i++ )
-//    {
-//        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-//        int radius = cvRound(circles[i][2]);
-//        // circle center
-//        cv::circle( imgMat, center, 3, Scalar(0,255,0), 3);
-//        // circle outline
-//        cv::circle( imgMat, center, radius, Scalar(0,0,255), 3);
+    //    /// Draw the circles detected
+    //    for( size_t i = 0; i < circles.size(); i++ )
+    //    {
+    //        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+    //        int radius = cvRound(circles[i][2]);
+    //        // circle center
+    //        cv::circle( imgMat, center, 3, Scalar(0,255,0), 3);
+    //        // circle outline
+    //        cv::circle( imgMat, center, radius, Scalar(0,0,255), 3);
 
-//    }
+    //    }
 
-//    Mat src,dst,cdst;
-//    /// Read the image
-//    src = imread(cstr, 1 );
-//    Canny(src, dst, 50, 200, 3);
+    //    Mat src,dst,cdst;
+    //    /// Read the image
+    //    src = imread(cstr, 1 );
+    //    Canny(src, dst, 50, 200, 3);
 
-//    cvtColor(dst, cdst, CV_GRAY2BGR);
-//    vector<Vec4i> lines;
-//    HoughLinesP(dst, lines, 1, CV_PI/180, 200, 50, 10 );
-//    for ( size_t i = 0; i < lines.size(); i++ ) {
-//        Vec4i l = lines[i];
-//        line( cdst, Point(l[0], l[1]),Point(l[2], l[3]), Scalar(0,0,255),3, CV_AA);
-//    }
+    //    cvtColor(dst, cdst, CV_GRAY2BGR);
+    //    vector<Vec4i> lines;
+    //    HoughLinesP(dst, lines, 1, CV_PI/180, 200, 50, 10 );
+    //    for ( size_t i = 0; i < lines.size(); i++ ) {
+    //        Vec4i l = lines[i];
+    //        line( cdst, Point(l[0], l[1]),Point(l[2], l[3]), Scalar(0,0,255),3, CV_AA);
+    //    }
 
 
     cvNamedWindow("Tracked");
-      cvShowImage("Tracked",imgIpl);
+    cvShowImage("Tracked",imgIpl);
 
     //cv::imshow( "Tracked", imgIpl );
 

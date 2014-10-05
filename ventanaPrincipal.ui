@@ -51,7 +51,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Re-Constructor de Imagenes</string>
+     <string>Reconstructor de Imagenes</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
