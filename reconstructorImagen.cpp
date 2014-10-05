@@ -52,9 +52,6 @@ void reconstructorImagen::descomponerImagen()
                 matrizLectura->insertarPos(i,j, Pixel);
             }
      }
-
-
-
 }
 
 bool reconstructorImagen::detectorFallos()

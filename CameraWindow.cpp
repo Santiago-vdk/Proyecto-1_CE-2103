@@ -29,6 +29,7 @@ CameraWindow::CameraWindow(CvCapture *cam, QWidget *parent)
 
    connect(botonInterpretar, SIGNAL(clicked()), this, SLOT(interpretarImagen()));
 
+
    startTimer(100);  // 0.1-second timer
 }
 

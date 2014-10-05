@@ -47,13 +47,11 @@ ventanaAprendizaje::ventanaAprendizaje(QWidget *parent, Facade* pFacade) :
     ui->botonNo->setDisabled(true);
     ui->botonSi->setDisabled(true);
     ui->botonRecuerdos->setDisabled(true);
+    ui->botonIgnorar->setDisabled(true);
 
     //###############################################################
-
     ui->output->setReadOnly(true);
-
     banderaComando = false;
-
 
     connect(this, SIGNAL(procesamientoFinalizado()), this, SLOT(interaccionPC()));
 
@@ -66,94 +64,70 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
     std::string str = pUltimaImagen;
     const char *cstr = str.c_str();
 
-
     IplImage* img =  cvLoadImage(cstr);
 
-    //show the original image
-    cvNamedWindow("Raw");
-    cvShowImage("Raw",img);
 
+    //show the original image
+//    cvNamedWindow("Raw");
+//    cvShowImage("Raw",img);
 
     //smooth the original image using Gaussian kernel to remove noise
     cvSmooth(img, img, CV_GAUSSIAN,3,3);
-
-
 
     //converting the original image into grayscale
     IplImage* imgGrayScale = cvCreateImage(cvGetSize(img), 8, 1);
     cvCvtColor(img,imgGrayScale,CV_BGR2GRAY);
 
 
-    cvNamedWindow("GrayScale Image");
-     cvShowImage("GrayScale Image",imgGrayScale);
+//    cvNamedWindow("GrayScale Image");
+//     cvShowImage("GrayScale Image",imgGrayScale);
 
 
      //thresholding the grayscale image to get better results
      cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
 
-     cvNamedWindow("Thresholded Image");
-     cvShowImage("Thresholded Image",imgGrayScale);
-
-
-
+//     cvNamedWindow("Thresholded Image");
+//     cvShowImage("Thresholded Image",imgGrayScale);
 
     CvSeq* contours;  //hold the pointer to a contour in the memory block
     CvSeq* result;   //hold sequence of points of a contour
     CvMemStorage *storage = cvCreateMemStorage(0); //storage area for all contours
-
     //finding all contours in the image
     cvFindContours(imgGrayScale, storage, &contours, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
 
     //###############################################################################################
-
-
-    //iterating through each contour
     bool banderaDetecteContornos = false;
-
-    //while(!banderaDetecte)
     while(contours)
     {
-        //obtain a sequence of points of contour, pointed by the variable 'contour'
         result = cvApproxPoly(contours, sizeof(CvContour), storage, CV_POLY_APPROX_DP, cvContourPerimeter(contours)*0.02, 0);
-
         //if there are 3  vertices  in the contour(It should be a triangle)
         if(result->total==3  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
         {
-            //iterating through each point
             CvPoint *pt[3];
             for(int i=0;i<3;i++){
                 pt[i] = (CvPoint*)cvGetSeqElem(result, i);
             }
 
-            //drawing lines around the triangle
             cvLine(img, *pt[0], *pt[1], cvScalar(255,0,0),4);
             cvLine(img, *pt[1], *pt[2], cvScalar(255,0,0),4);
             cvLine(img, *pt[2], *pt[0], cvScalar(255,0,0),4);
-
-
             qDebug() << "Triangulo";
             banderaDetecteContornos = true;
              _vertices = result->total;
             break;
-
         }
-
         //if there are 4 vertices in the contour(It should be a quadrilateral)
         else if(result->total==4  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
         {
-            //iterating through each point
             CvPoint *pt[4];
             for(int i=0;i<4;i++){
                 pt[i] = (CvPoint*)cvGetSeqElem(result, i);
             }
 
-            //drawing lines around the quadrilateral
             cvLine(img, *pt[0], *pt[1], cvScalar(0,255,0),4);
             cvLine(img, *pt[1], *pt[2], cvScalar(0,255,0),4);
             cvLine(img, *pt[2], *pt[3], cvScalar(0,255,0),4);
             cvLine(img, *pt[3], *pt[0], cvScalar(0,255,0),4);
-
-
             qDebug() << "Cuadrilatero";
             banderaDetecteContornos = true;
              _vertices = result->total;
@@ -162,13 +136,11 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
         //if there are 7  vertices  in the contour(It should be a heptagon)
         else if(result->total ==7   && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
         {
-            //iterating through each point
+
             CvPoint *pt[7];
             for(int i=0;i<7;i++){
                 pt[i] = (CvPoint*)cvGetSeqElem(result, i);
             }
-
-            //drawing lines around the heptagon
             cvLine(img, *pt[0], *pt[1], cvScalar(0,0,255),4);
             cvLine(img, *pt[1], *pt[2], cvScalar(0,0,255),4);
             cvLine(img, *pt[2], *pt[3], cvScalar(0,0,255),4);
@@ -176,35 +148,25 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             cvLine(img, *pt[4], *pt[5], cvScalar(0,0,255),4);
             cvLine(img, *pt[5], *pt[6], cvScalar(0,0,255),4);
             cvLine(img, *pt[6], *pt[0], cvScalar(0,0,255),4);
-
-
             qDebug() << "Heptagono";
             banderaDetecteContornos = true;
              _vertices = result->total;
 
             break;
-
         }
         //obtain the next contour
         contours = contours->h_next;
     }
-
+    qDebug() << banderaDetecteContornos;
     if (!banderaDetecteContornos){
-        qDebug()<< "Aqui";
-        Mat src, src_gray;
 
+        Mat src, src_gray;
         /// Read the image
         src = imread(cstr, 1 );
-
         /// Convert it to gray
         cvtColor( src, src_gray, CV_BGR2GRAY );
-
-        /// Reduce the noise so we avoid false circle detection
         GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
-
         vector<Vec3f> circles;
-
-        /// Apply the Hough Transform to find the circles
         HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 2, src_gray.rows/2, 200, 100);
 
         /// Draw the circles detected
@@ -216,47 +178,58 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             cv::circle( src, center, 3, Scalar(0,255,0), 3);
             // circle outline
             cv::circle( src, center, radius, Scalar(0,0,255), 3);
+            qDebug() << "Circulo";;
+            banderaDetecteContornos = true;
          }
 
         /// Show your results
         cv::namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
         cv::imshow( "Hough Circle Transform Demo", src );
          _vertices = -1;
-         banderaDetecteContornos = true;
 
     }
 
-
+    qDebug() << banderaDetecteContornos;
     if (!banderaDetecteContornos){
-        Mat src,dst,cdst;
 
+        Mat src,dst,cdst;
         /// Read the image
         src = imread(cstr, 1 );
-
         Canny(src, dst, 50, 200, 3);
-        cvtColor(dst, cdst, CV_GRAY2BGR);
 
+        cvtColor(dst, cdst, CV_GRAY2BGR);
         vector<Vec4i> lines;
-        HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 10 );
+        HoughLinesP(dst, lines, 1, CV_PI/180, 200, 50, 10 );
         for ( size_t i = 0; i < lines.size(); i++ ) {
             Vec4i l = lines[i];
             line( cdst, Point(l[0], l[1]),
                   Point(l[2], l[3]), Scalar(0,0,255),
                   3, CV_AA);
+            qDebug() << "Linea";
+            banderaDetecteContornos = true;
         }
 
-        imshow("source", src);
         imshow("detected lines", cdst);
+    }
+    qDebug() << banderaDetecteContornos;
+    qDebug() << "Termine procesamiento";
+    //###############################################################################################
 
 
 
-
+    if(banderaDetecteContornos){
+        ui->output->setTextColor("red");
+        ui->output->append("Ordenador: Como deberia llamar esta forma?");
+        ui->botonEnviar->setDisabled(false);
+        ui->botonIgnorar->setDisabled(false);
+    }
+    else if(!banderaDetecteContornos){
+        ui->output->setTextColor("red");
+        ui->output->append("Ordenador: No detecte ninguna forma");
     }
 
-    qDebug() << "Termine procesamiento";
 
 
-    //###############################################################################################
     //show the image in which identified shapes are marked
     cvNamedWindow("Tracked");
     cvShowImage("Tracked",img);
@@ -269,10 +242,9 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
     cvReleaseImage(&img);
     cvReleaseImage(&imgGrayScale);
 
-    ui->botonEnviar->setDisabled(false);
 
-    ui->output->setTextColor("red");
-    ui->output->append("Ordenador: Como deberia llamar esta forma?");
+
+
 }
 
 void ventanaAprendizaje::elSlot()
@@ -333,6 +305,19 @@ void ventanaAprendizaje::on_botonEnviar_clicked()
     ui->botonEnviar->setDisabled(true);
     procesamientoFinalizado();
 }
+
+
+
+
+void ventanaAprendizaje::on_botonIgnorar_clicked()
+{
+    ui->output->setTextColor("red");
+    ui->output->append("Ordenador: Ignorare la ultima figura.");
+    ui->botonIgnorar->setDisabled(true);
+    ui->botonEnviar->setDisabled(true);
+
+}
+
 
 void ventanaAprendizaje::on_botonNo_clicked()
 {

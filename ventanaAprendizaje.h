@@ -38,6 +38,8 @@ private slots:
     void on_botonRecuerdos_clicked();
     void interpretaImagenCompuesta();
 
+    void on_botonIgnorar_clicked();
+
 signals:
     void procesamientoFinalizado();
 
