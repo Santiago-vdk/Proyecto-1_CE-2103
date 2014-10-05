@@ -67,7 +67,10 @@ SOURCES += main.cpp \
     CameraWidget.cpp \
     CameraWindow.cpp \
     ventanaAprendizaje.cpp \
-    Facade.cpp
+    Facade.cpp \
+    combinaciones.cpp \
+    listacombinaciones.cpp \
+    nodoCombinacion.cpp
 
 HEADERS  += \
     ventanaPrincipal.h \
@@ -83,7 +86,10 @@ HEADERS  += \
     CameraWidget.h \
     CameraWindow.h \
     ventanaAprendizaje.h \
-    Facade.h
+    Facade.h \
+    combinaciones.h \
+    listacombinaciones.h \
+    nodoCombinacion.h
 
 FORMS    += \
     ventanaPrincipal.ui \
