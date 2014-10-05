@@ -12,3 +12,13 @@ void combinaciones::insertarFigura(figura *nFigura)
 
 
 }
+
+int combinaciones::getCantidad()
+{
+    return listaElementos->getTamanio();
+}
+
+listaFigura combinaciones::getListaElementos()
+{
+    return *listaElementos;
+}

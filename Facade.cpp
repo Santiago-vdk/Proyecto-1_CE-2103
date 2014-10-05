@@ -26,7 +26,7 @@ bool Facade::recordar(int vertices)
 void Facade::aprender(int vertices, string nombre)
 {
    qDebug() << QString::fromStdString (nombre) ;
-    figura *forma=new figura(nombre,vertices);
+    figura *forma=new figura(vertices,nombre);
     _memoria->insertarFinal(forma);
 }
 
@@ -52,16 +52,25 @@ int Facade::cantidadRecuerdos()
 
 void Facade::nuevaCombinacion()
 {
-    //combinaciones.insertarFigura();
+    _combinaciones->insertarFinal(new combinaciones());
 }
 
 void Facade::agregarEnUltimaCombinacion(CvSeq *pResult, CvPoint *pPuntos)
 {
-
+    _combinaciones->getTail()->getCombinaciones()->insertarFigura(new figura(pResult->total,""));
+    _combinaciones->getTail()->getCombinaciones()->getListaElementos().getTail()->getFigura()->setConfig(pResult);
+    _combinaciones->getTail()->getCombinaciones()->getListaElementos().getTail()->getFigura()->setPuntos(pPuntos);
 }
 
-bool Facade::CombinacionCorrecta(int pPos, CvSeq results[])
+bool Facade::CombinacionCorrecta(int pPos)//modificar
 {
+    int cantidad=_combinaciones->getPos(pPos)->getCombinaciones()->getCantidad();
 
+    return true;
+}
+
+int Facade::getTamanioCombinaciones()
+{
+ _combinaciones->getTamanio();
 }
 

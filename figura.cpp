@@ -1,11 +1,9 @@
 #include "figura.h"
 
-figura::figura(string pNombre,CvSeq * pResult,CvPoint *pPuntos)
+figura::figura(int pVertices,string pNombre)
 {
     _Nombre = pNombre;
-    _Vertices = pResult->total;
-    _Config= *pResult;
-    _Puntos= *pPuntos;
+    _Vertices = pVertices;
 
 }
 
@@ -29,12 +27,22 @@ void figura::setNombre(string nombre)
     _Nombre= nombre;
 }
 
+void figura::setConfig(CvSeq *Config)
+{
+    _Config = Config;
+}
+
+void figura::setPuntos(CvPoint *Puntos)
+{
+    _Puntos = Puntos;
+}
+
 CvSeq figura::getResult()
 {
-    return _Config;
+    return *_Config;
 }
 
 CvPoint figura::getPuntos()
 {
-    return _Puntos;
+    return *_Puntos;
 }

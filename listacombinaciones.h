@@ -14,7 +14,6 @@ public:
     nodoCombinacion *getTail();
     int getTamanio();
     nodoCombinacion *getPos(int i);
-    nodoCombinacion *buscarIndice(int vertices);
 
     void setHead(nodoCombinacion *pHead);
     void setTail(nodoCombinacion *pTail);

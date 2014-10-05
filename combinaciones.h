@@ -10,9 +10,12 @@ class combinaciones
 public:
     combinaciones();
     void insertarFigura(figura *nFigura);
+    int getCantidad();
+    listaFigura getListaElementos();
+
+
 private:
     listaFigura *listaElementos; // guarda todas las figuras que contiene la combinacion
-
 
 
 };

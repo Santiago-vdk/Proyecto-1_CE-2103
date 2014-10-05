@@ -65,15 +65,6 @@ nodoCombinacion *listaCombinaciones::getPos(int i)
     return tmp;
 }
 
-nodoCombinacion * listaCombinaciones::buscarIndice(int vertices)
-{
-    nodoCombinacion *tmp= _head;
-    while((tmp!=NULL)&&(tmp->getCombinaciones()->getContador()!=vertices)){
-        tmp=tmp->getCombinacionesNext();
-    }
-    return tmp;
-}
-
 void listaCombinaciones::setHead(nodoCombinacion *pHead)
 {
     _head = pHead;

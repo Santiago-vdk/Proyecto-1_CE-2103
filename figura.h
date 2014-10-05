@@ -7,11 +7,13 @@ using namespace std;
 class figura
 {
 public:
-    figura(string pNombre,CvSeq *pResult,CvPoint *pPuntos);
+    figura(int pVertices,string pNombre);
     int getVertices();
     string getNombre();
     void setVertices(int vertices);
     void setNombre(string nombre);
+    void setConfig(CvSeq *Config);
+    void setPuntos(CvPoint *Puntos);
     CvPoint getPuntos();
     CvSeq getResult();
 
@@ -20,8 +22,8 @@ public:
 private:
     string _Nombre;
     int _Vertices;
-    CvSeq _Config;
-    CvPoint _Puntos;
+    CvSeq *_Config;
+    CvPoint *_Puntos;
 };
 
 #endif // FIGURA_H
