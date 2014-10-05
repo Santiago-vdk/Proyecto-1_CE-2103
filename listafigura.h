@@ -19,6 +19,8 @@ public:
     void setHead(nodoFigura *pHead);
     void setTail(nodoFigura *pTail);
 
+    void borrarPos(int pPos);
+
     void insertarFinal(figura *nodo);
 
 

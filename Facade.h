@@ -22,12 +22,15 @@ public:
     void agregarEnUltimaCombinacion(CvSeq *pResult,CvPoint *pPuntos);
     bool CombinacionCorrecta(int pPos);
     int getTamanioCombinaciones();
+    listaFigura getListaTemporal();
+    void insertarListaTemporal(CvSeq *pResult);
 
 
 
 private:
     listaFigura *_memoria;
     listaCombinaciones *_combinaciones;
+    listaFigura *_listaTemporal;
 
 
 };

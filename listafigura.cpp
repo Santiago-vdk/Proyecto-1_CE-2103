@@ -84,3 +84,35 @@ void listaFigura::setTail(nodoFigura *pTail)
     _tail = pTail;
 }
 
+void listaFigura::borrarPos(int pPos)
+{
+    nodoFigura *tmp= _head;
+    int i=0;
+    while((tmp!=NULL)&&(i<pPos)){
+        i++;
+        tmp=tmp->getFiguraNext();
+    }
+    if (tmp==NULL){
+
+    }
+    else{
+        if (tmp==_head){
+            _head=_head->getFiguraNext();
+            delete tmp;
+            _tamanio--;
+            _head->setFiguraPrev(NULL);
+        }
+        else if (tmp==_tail){
+            _tail=_tail->getFiguraPrev();
+            delete tmp;
+            _tail->setFiguraNext(NULL);
+            _tamanio--;
+        }
+        else{
+            tmp->getFiguraPrev()->setFiguraNext(tmp->getFiguraNext());
+            tmp->getFiguraNext()->setFiguraPrev(tmp->getFiguraPrev());
+            delete tmp;
+            _tamanio--;
+        }
+    }
+}
