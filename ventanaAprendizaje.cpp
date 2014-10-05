@@ -181,11 +181,14 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             qDebug() << "Circulo";;
             banderaDetecteContornos = true;
          }
-
+        if(banderaDetecteContornos){
         /// Show your results
         cv::namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
         cv::imshow( "Hough Circle Transform Demo", src );
+        }
          _vertices = -1;
+
+
 
     }
 
@@ -208,14 +211,15 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             qDebug() << "Linea";
             banderaDetecteContornos = true;
         }
+        if(banderaDetecteContornos){
+            imshow("Lineas Detectadas", cdst);
+        }
 
-        imshow("detected lines", cdst);
+
     }
     qDebug() << banderaDetecteContornos;
     qDebug() << "Termine procesamiento";
     //###############################################################################################
-
-
 
     if(banderaDetecteContornos){
         ui->output->setTextColor("red");
