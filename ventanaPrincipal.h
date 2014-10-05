@@ -8,6 +8,7 @@
 #include <QPushButton>
 
 #include <Facade.h>
+#include <QLabel>
 
 
 using namespace std;
@@ -54,6 +55,7 @@ private:
     bool banderaPrimeraCorrida;
     bool banderaGuardado;
     Facade *facade;
+    QLabel *indicadorNumero;
 
 
 };

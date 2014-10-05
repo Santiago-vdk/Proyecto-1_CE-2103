@@ -62,37 +62,36 @@ void ventanaPrincipal::on_pushButton_clicked()
 
 void ventanaPrincipal::ventanaRevisado()
 {
-    if (!banderaPrimeraCorrida){
+    if (banderaPrimeraCorrida){
         ui->pushButton_2->setDisabled(true);
-        this->close();
+        //this->hide();
+        popupDialogReconstruir = new QDialog();
+        QVBoxLayout *layout = new QVBoxLayout;
+        botonCorregir = new QPushButton("Corregir");
+        QPushButton *botonCancelar = new QPushButton("Cancelar");
+        QLabel *indicador = new QLabel("Errores Detectados: ");
+        indicadorNumero = new QLabel(QString::number(reconstructor->getErrores()));
+        popupDialogReconstruir->setMinimumWidth(300);
+        popupDialogReconstruir->setMinimumHeight(150);
+        popupDialogReconstruir->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
+        layout->addWidget(botonCorregir);
+        layout->addWidget(botonCancelar);
+        layout->addWidget(indicador);
+        layout->addWidget(indicadorNumero);
+        popupDialogReconstruir->setLayout(layout);
+        connect(botonCorregir, SIGNAL(released()), this, SLOT(popupCorregir()));
+        connect(botonCancelar, SIGNAL(released()), this, SLOT(popupCancelar()));
     }
 
 
     int blancos = reconstructor->getErrores();
     QString blanc = QString::number(blancos);
-    popupDialogReconstruir = new QDialog();
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    botonCorregir = new QPushButton("Corregir");
-    QPushButton *botonCancelar = new QPushButton("Cancelar");
 
-    QLabel *indicador = new QLabel("Errores Detectados: ");
-    QLabel *indicadorNumero = new QLabel(blanc);
-    popupDialogReconstruir->setMinimumWidth(300);
-    popupDialogReconstruir->setMinimumHeight(150);
-    popupDialogReconstruir->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
-
-    layout->addWidget(botonCorregir);
-    layout->addWidget(botonCancelar);
-
-    layout->addWidget(indicador);
-    layout->addWidget(indicadorNumero);
-
-    popupDialogReconstruir->setLayout(layout);
+    indicadorNumero->setText(blanc);
     popupDialogReconstruir->show();
 
-    connect(botonCorregir, SIGNAL(released()), this, SLOT(popupCorregir()));
-    connect(botonCancelar, SIGNAL(released()), this, SLOT(popupCancelar()));
+
     if (reconstructor->getErrores() == 0){
         botonCorregir->setDisabled(true);
         botonCorregir->setText("Sin Errores");
@@ -101,11 +100,11 @@ void ventanaPrincipal::ventanaRevisado()
 
 void ventanaPrincipal::ventanaMostrado()
 {
+
+    //this->close();
     Mat image;
     image = reconstructor->arreglarImagen();
-
     _image = image;
-
     QPixmap newpix(":/recursos/new.png");
     QPixmap openpix(":/recursos/open.png");
     QPixmap savepix(":/recursos/save.png");
@@ -171,13 +170,13 @@ void ventanaPrincipal::on_pushButton_2_clicked()
 
 void ventanaPrincipal::popupCancelar()
 {
-   popupDialogReconstruir->close();
+   popupDialogReconstruir->hide();
 }
 
 void ventanaPrincipal::popupCorregir()
 {
     ventanaMostrado();
-    popupDialogReconstruir->close();
+    popupDialogReconstruir->hide();
 
 }
 
@@ -186,8 +185,6 @@ void ventanaPrincipal::guardarImagen()
     cv::imwrite("Guardada.jpg",_image);
     banderaGuardado = true;
 }
-
-
 
 void ventanaPrincipal::on_buttonAprendizaje_clicked()
 {
@@ -219,6 +216,7 @@ void ventanaPrincipal::nuevaImagen()
       }
       }
     else{
+        banderaGuardado = false;
         ventanaReconstructor->close();
         nuevaReconstruccion();
     }
