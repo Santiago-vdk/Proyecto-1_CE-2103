@@ -1,7 +1,9 @@
 #ifndef FACADE_H
 #define FACADE_H
 #include "listafigura.h"
+#include "listacombinaciones.h"
 #include <string>
+#include <opencv/cv.h>
 
 using namespace std;
 
@@ -16,10 +18,15 @@ public:
     string nombreRecuerdo(int posicion);
     int verticesRecuerdo(int posicion);
     int cantidadRecuerdos();
+    void nuevaCombinacion();
+    void agregarEnUltimaCombinacion(CvSeq *pResult,CvPoint *pPuntos);
+    bool CombinacionCorrecta(int pPos,CvSeq results[]);
+
 
 
 private:
     listaFigura *_memoria;
+    listacombinaciones *_combinaciones;
 
 
 };

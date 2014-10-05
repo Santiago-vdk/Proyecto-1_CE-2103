@@ -8,6 +8,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <CameraWidget.h>
+#include <QPushButton>
 
 
 using namespace std;
@@ -29,9 +30,12 @@ private:
 
     bool imagenTomada;
 
+    QPushButton *button;
+
 signals:
     void guardeImagen();
     void interpretaImagen();
+    void aprendeFormaCompuesta();
 
 
 protected:
@@ -40,6 +44,9 @@ protected:
 public slots:
     void savePicture(void);
     void interpretarImagen(void);
+    void habilitaAprendeForma();
+    void deshabilitaAprendeForma();
+    void figuraCompuesta();
 
 };
 

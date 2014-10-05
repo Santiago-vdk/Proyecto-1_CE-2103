@@ -8,14 +8,11 @@ using namespace std;
 class combinaciones
 {
 public:
-    combinaciones(string pNombre,int pContador);
+    combinaciones();
     void insertarFigura(figura *nFigura);
-    string getNombre();
-    int getContador();
 private:
-    string _Nombre;
     listaFigura *listaElementos; // guarda todas las figuras que contiene la combinacion
-    int _Contador;
+
 
 
 };

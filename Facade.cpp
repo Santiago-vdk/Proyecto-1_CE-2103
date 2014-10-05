@@ -50,3 +50,18 @@ int Facade::cantidadRecuerdos()
     return _memoria->getTamanio();
 }
 
+void Facade::nuevaCombinacion()
+{
+    //combinaciones.insertarFigura();
+}
+
+void Facade::agregarEnUltimaCombinacion(CvSeq *pResult, CvPoint *pPuntos)
+{
+
+}
+
+bool Facade::CombinacionCorrecta(int pPos, CvSeq results[])
+{
+
+}
+

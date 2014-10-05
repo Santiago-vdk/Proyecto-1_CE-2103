@@ -27,6 +27,14 @@ ventanaAprendizaje::ventanaAprendizaje(QWidget *parent, Facade* pFacade) :
 {
     _facade = pFacade;
     ui->setupUi(this);
+
+    this->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
+    QPixmap bkgnd(":/recursos/COLOURlovers.com-Twilight_Tree.png");
+    bkgnd = bkgnd.scaled(this->size());
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
+
     camera = cvCreateCameraCapture(0);
     cvQueryFrame(camera);
     QVBoxLayout *layout = new QVBoxLayout;
@@ -37,6 +45,10 @@ ventanaAprendizaje::ventanaAprendizaje(QWidget *parent, Facade* pFacade) :
 
     connect(windowCamara, SIGNAL(guardeImagen()), this, SLOT(elSlot()));
     connect(windowCamara, SIGNAL(interpretaImagen()), this, SLOT(interpretaImagenCompuesta()));
+
+    connect(this, SIGNAL(habilitarAprendeForma()), windowCamara, SLOT(habilitaAprendeForma()));
+    connect(this, SIGNAL(deshabilitarAprendeForma()),windowCamara, SLOT(deshabilitaAprendeForma()));
+    connect(windowCamara, SIGNAL(aprendeFormaCompuesta()),this, SLOT(aprenderFormaCompuesta()));
 
     widget->resize(600,600);
 
@@ -49,12 +61,10 @@ ventanaAprendizaje::ventanaAprendizaje(QWidget *parent, Facade* pFacade) :
     ui->botonRecuerdos->setDisabled(true);
     ui->botonIgnorar->setDisabled(true);
 
-    //###############################################################
     ui->output->setReadOnly(true);
     banderaComando = false;
 
     connect(this, SIGNAL(procesamientoFinalizado()), this, SLOT(interaccionPC()));
-
 }
 
 void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
@@ -66,35 +76,18 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
     IplImage* img =  cvLoadImage(cstr);
 
-
-    //show the original image
-//    cvNamedWindow("Raw");
-//    cvShowImage("Raw",img);
-
-    //smooth the original image using Gaussian kernel to remove noise
     cvSmooth(img, img, CV_GAUSSIAN,3,3);
 
-    //converting the original image into grayscale
     IplImage* imgGrayScale = cvCreateImage(cvGetSize(img), 8, 1);
     cvCvtColor(img,imgGrayScale,CV_BGR2GRAY);
 
+    cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
 
-//    cvNamedWindow("GrayScale Image");
-//     cvShowImage("GrayScale Image",imgGrayScale);
-
-
-     //thresholding the grayscale image to get better results
-     cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
-
-//     cvNamedWindow("Thresholded Image");
-//     cvShowImage("Thresholded Image",imgGrayScale);
-
-    CvSeq* contours;  //hold the pointer to a contour in the memory block
-    CvSeq* result;   //hold sequence of points of a contour
-    CvMemStorage *storage = cvCreateMemStorage(0); //storage area for all contours
+    CvSeq* contours;
+    CvSeq* result;
+    CvMemStorage *storage = cvCreateMemStorage(0);
     //finding all contours in the image
     cvFindContours(imgGrayScale, storage, &contours, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
-
     //###############################################################################################
     bool banderaDetecteContornos = false;
     while(contours)
@@ -113,7 +106,7 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             cvLine(img, *pt[2], *pt[0], cvScalar(255,0,0),4);
             qDebug() << "Triangulo";
             banderaDetecteContornos = true;
-             _vertices = result->total;
+            _vertices = result->total;
             break;
         }
         //if there are 4 vertices in the contour(It should be a quadrilateral)
@@ -130,7 +123,7 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             cvLine(img, *pt[3], *pt[0], cvScalar(0,255,0),4);
             qDebug() << "Cuadrilatero";
             banderaDetecteContornos = true;
-             _vertices = result->total;
+            _vertices = result->total;
             break;
         }
         //if there are 7  vertices  in the contour(It should be a heptagon)
@@ -150,7 +143,7 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             cvLine(img, *pt[6], *pt[0], cvScalar(0,0,255),4);
             qDebug() << "Heptagono";
             banderaDetecteContornos = true;
-             _vertices = result->total;
+            _vertices = result->total;
 
             break;
         }
@@ -180,13 +173,13 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             cv::circle( src, center, radius, Scalar(0,0,255), 3);
             qDebug() << "Circulo";;
             banderaDetecteContornos = true;
-         }
-        if(banderaDetecteContornos){
-        /// Show your results
-        cv::namedWindow( "Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE );
-        cv::imshow( "Hough Circle Transform Demo", src );
         }
-         _vertices = -1;
+        if(banderaDetecteContornos){
+            /// Show your results
+            cv::namedWindow( "Detecte un Circulo", CV_WINDOW_AUTOSIZE );
+            cv::imshow( "Detecte un Circulo", src );
+        }
+        _vertices = -1;
 
 
 
@@ -206,8 +199,8 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
         for ( size_t i = 0; i < lines.size(); i++ ) {
             Vec4i l = lines[i];
             line( cdst, Point(l[0], l[1]),
-                  Point(l[2], l[3]), Scalar(0,0,255),
-                  3, CV_AA);
+                    Point(l[2], l[3]), Scalar(0,0,255),
+                    3, CV_AA);
             qDebug() << "Linea";
             banderaDetecteContornos = true;
         }
@@ -226,17 +219,17 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
         ui->output->append("Ordenador: Como deberia llamar esta forma?");
         ui->botonEnviar->setDisabled(false);
         ui->botonIgnorar->setDisabled(false);
+        deshabilitarAprendeForma();
     }
     else if(!banderaDetecteContornos){
         ui->output->setTextColor("red");
         ui->output->append("Ordenador: No detecte ninguna forma");
     }
 
-
-
-    //show the image in which identified shapes are marked
-    cvNamedWindow("Tracked");
-    cvShowImage("Tracked",img);
+    if(banderaDetecteContornos){
+        cvNamedWindow("Tracked");
+        cvShowImage("Tracked",img);
+    }
 
     cvWaitKey(0); //wait for a key press
 
@@ -283,6 +276,8 @@ void ventanaAprendizaje::interaccionPC()
         _figuraNombre = "";
         _vertices = 0;
         ui->botonRecuerdos->setDisabled(false);
+        ui->botonIgnorar->setDisabled(true);
+        habilitarAprendeForma();
     }
 }
 
@@ -293,25 +288,17 @@ ventanaAprendizaje::~ventanaAprendizaje()
 
 void ventanaAprendizaje::on_botonEnviar_clicked()
 {
-
     ui->output->setTextColor("blue");
     ui->output->append(ui->input->text());
-
     qDebug()<< ui->input->text();
-
     comando = ui->input->text().toStdString();
     banderaComando = true;
-
     _figuraNombre = comando;
-
-        std::cout << _figuraNombre << std::endl;
-
+    std::cout << _figuraNombre << std::endl;
     ui->botonEnviar->setDisabled(true);
     procesamientoFinalizado();
+    habilitarAprendeForma();
 }
-
-
-
 
 void ventanaAprendizaje::on_botonIgnorar_clicked()
 {
@@ -319,6 +306,12 @@ void ventanaAprendizaje::on_botonIgnorar_clicked()
     ui->output->append("Ordenador: Ignorare la ultima figura.");
     ui->botonIgnorar->setDisabled(true);
     ui->botonEnviar->setDisabled(true);
+    habilitarAprendeForma();
+
+}
+
+void ventanaAprendizaje::aprenderFormaCompuesta()
+{
 
 }
 
@@ -330,6 +323,7 @@ void ventanaAprendizaje::on_botonNo_clicked()
     ui->botonNo->setDisabled(true);
     ui->botonEnviar->setDisabled(true);
     ui->botonSi->setDisabled(true);
+    habilitarAprendeForma();
 }
 
 void ventanaAprendizaje::on_botonSi_clicked()
@@ -340,6 +334,7 @@ void ventanaAprendizaje::on_botonSi_clicked()
     ui->botonNo->setDisabled(true);
     ui->botonEnviar->setDisabled(true);
     ui->botonSi->setDisabled(true);
+    habilitarAprendeForma();
 
 }
 
@@ -361,10 +356,114 @@ void ventanaAprendizaje::on_botonRecuerdos_clicked()
 void ventanaAprendizaje::interpretaImagenCompuesta()
 {
 
+    qDebug() << "aqui";
+
+    std::string str = "C:/fotos/casa.jpg";
+    const char *cstr = str.c_str();
+    IplImage* imgIpl =  cvLoadImage(cstr);
+    cvSmooth(imgIpl, imgIpl, CV_GAUSSIAN,3,3);
+    IplImage* imgGrayScale = cvCreateImage(cvGetSize(imgIpl), 8, 1);
+    cvCvtColor(imgIpl,imgGrayScale,CV_BGR2GRAY);
+    cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
+    CvSeq* contours;
+    CvSeq* result;
+    CvMemStorage *storage = cvCreateMemStorage(0);
+    cvFindContours(imgGrayScale, storage, &contours, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
+
+    while(contours)
+    {
+        result = cvApproxPoly(contours, sizeof(CvContour), storage, CV_POLY_APPROX_DP, cvContourPerimeter(contours)*0.02, 0);
+
+        //if there are 3  vertices  in the contour(It should be a triangle)
+        if(result->total==3  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+        {
+            CvPoint *pt[3];
+            for(int i=0;i<3;i++){
+                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+            }
+            cvLine(imgIpl, *pt[0], *pt[1], cvScalar(255,0,0),4);
+            cvLine(imgIpl, *pt[1], *pt[2], cvScalar(255,0,0),4);
+            cvLine(imgIpl, *pt[2], *pt[0], cvScalar(255,0,0),4);
+
+        }
+        //if there are 4 vertices in the contour(It should be a quadrilateral)
+        else if(result->total==4  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
+        {
+            CvPoint *pt[4];
+            for(int i=0;i<4;i++){
+                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+            }
+            cvLine(imgIpl, *pt[0], *pt[1], cvScalar(0,255,0),4);
+            cvLine(imgIpl, *pt[1], *pt[2], cvScalar(0,255,0),4);
+            cvLine(imgIpl, *pt[2], *pt[3], cvScalar(0,255,0),4);
+            cvLine(imgIpl, *pt[3], *pt[0], cvScalar(0,255,0),4);
+
+        }
+        //if there are 7  vertices  in the contour(It should be a heptagon)
+        else if(result->total == 7   && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+        {
+            CvPoint *pt[7];
+            for(int i=0;i<7;i++){
+                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+            }
+            cvLine(imgIpl, *pt[0], *pt[1], cvScalar(0,0,255),4);
+            cvLine(imgIpl, *pt[1], *pt[2], cvScalar(0,0,255),4);
+            cvLine(imgIpl, *pt[2], *pt[3], cvScalar(0,0,255),4);
+            cvLine(imgIpl, *pt[3], *pt[4], cvScalar(0,0,255),4);
+            cvLine(imgIpl, *pt[4], *pt[5], cvScalar(0,0,255),4);
+            cvLine(imgIpl, *pt[5], *pt[6], cvScalar(0,0,255),4);
+            cvLine(imgIpl, *pt[6], *pt[0], cvScalar(0,0,255),4);
+        }
+        //obtain the next contour
+        contours = contours->h_next;
+    }
+
+//    cv::Mat imgMat = cv::cvarrToMat(imgIpl);
+
+//    Mat src, src_gray;
+//    src = imread(cstr, 1 );
+//    /// Convert it to gray
+//    cvtColor( src, src_gray, CV_BGR2GRAY );
+//    GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
+//    vector<Vec3f> circles;
+//    HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 2, src_gray.rows/2, 200, 100);
+
+//    /// Draw the circles detected
+//    for( size_t i = 0; i < circles.size(); i++ )
+//    {
+//        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+//        int radius = cvRound(circles[i][2]);
+//        // circle center
+//        cv::circle( imgMat, center, 3, Scalar(0,255,0), 3);
+//        // circle outline
+//        cv::circle( imgMat, center, radius, Scalar(0,0,255), 3);
+
+//    }
+
+//    Mat src,dst,cdst;
+//    /// Read the image
+//    src = imread(cstr, 1 );
+//    Canny(src, dst, 50, 200, 3);
+
+//    cvtColor(dst, cdst, CV_GRAY2BGR);
+//    vector<Vec4i> lines;
+//    HoughLinesP(dst, lines, 1, CV_PI/180, 200, 50, 10 );
+//    for ( size_t i = 0; i < lines.size(); i++ ) {
+//        Vec4i l = lines[i];
+//        line( cdst, Point(l[0], l[1]),Point(l[2], l[3]), Scalar(0,0,255),3, CV_AA);
+//    }
 
 
+    cvNamedWindow("Tracked");
+      cvShowImage("Tracked",imgIpl);
 
+    //cv::imshow( "Tracked", imgIpl );
 
+    cvWaitKey(0);
+    cvDestroyAllWindows();
+    cvReleaseMemStorage(&storage);
+    cvReleaseImage(&imgIpl);
+    cvReleaseImage(&imgGrayScale);
 
 }
 

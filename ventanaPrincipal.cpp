@@ -29,6 +29,16 @@ ventanaPrincipal::ventanaPrincipal(QWidget *parent) :
 {
     ui->setupUi(this);
 
+
+    QPixmap bkgnd(":/recursos/COLOURlovers.com-Twilight_Tree.png");
+    bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
+    QPalette palette;
+    palette.setBrush(QPalette::Background, bkgnd);
+    this->setPalette(palette);
+
+
+
+
     facade = new Facade();
     ui->pushButton_2->setDisabled(true);
     this->setWindowFlags(windowFlags() ^ Qt::WindowMaximizeButtonHint);
