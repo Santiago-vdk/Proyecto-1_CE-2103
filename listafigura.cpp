@@ -1,9 +1,13 @@
 #include "listaFigura.h"
 #include <QDebug>
 
+using namespace std;
+
 listaFigura::listaFigura()
 {
     _tamanio=0;
+    _head=NULL;
+    _tail=NULL;
 }
 
 listaFigura::~listaFigura()
@@ -16,16 +20,16 @@ listaFigura::~listaFigura()
 }
 
 
-
-
-
 void listaFigura::insertarFinal(figura *nodo)
 {
     nodoFigura *tmp = new nodoFigura(nodo);
-    if(_head == NULL){
+
+    if(_tamanio==0){
         _head = _tail = tmp;
+
     }
     else{
+
         _tail->setFiguraNext(tmp);
         tmp->setFiguraPrev(_tail);
         _tail = tmp;
@@ -58,9 +62,15 @@ int listaFigura::getTamanio()
 
 nodoFigura *listaFigura::getPos(int i)
 {
+
+
+
     nodoFigura *tmp= _head;
+
+
     for(int a=0;a<i;a++){
         tmp=tmp->getFiguraNext();
+
     }
     return tmp;
 }
@@ -93,14 +103,12 @@ void listaFigura::borrarPos(int pPos)
         tmp=tmp->getFiguraNext();
     }
     if (tmp==NULL){
-
     }
     else{
         if (tmp==_head){
             _head=_head->getFiguraNext();
-            delete tmp;
+            //delete tmp;
             _tamanio--;
-            _head->setFiguraPrev(NULL);
         }
         else if (tmp==_tail){
             _tail=_tail->getFiguraPrev();

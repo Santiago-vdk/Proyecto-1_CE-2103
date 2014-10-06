@@ -11,7 +11,7 @@ public:
     combinaciones();
     void insertarFigura(figura *nFigura);
     int getCantidad();
-    listaFigura getListaElementos();
+    listaFigura *getListaElementos();
 
 
 private:

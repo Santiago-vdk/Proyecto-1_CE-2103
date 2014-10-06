@@ -46,7 +46,7 @@ nodoCombinacion *listaCombinaciones::getHead()
     return _head;
 }
 
-nodoCombinacion*listaCombinaciones::getTail()
+nodoCombinacion *listaCombinaciones::getTail()
 {
     return _tail;
 }

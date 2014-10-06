@@ -1,9 +1,17 @@
 #include "figura.h"
+#include "ListaPuntos.h"
+#include <QDebug>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <assert.h>
+#include "opencv2/core/core.hpp"
 
-figura::figura(int pVertices,string pNombre)
+figura::figura(int pVertices, string pNombre)
 {
     _Nombre = pNombre;
     _Vertices = pVertices;
+
+
 
 }
 
@@ -32,17 +40,19 @@ void figura::setConfig(CvSeq *Config)
     _Config = Config;
 }
 
-void figura::setPuntos(CvPoint *Puntos)
+void figura::setPuntos(ListaPuntos *Puntos)
 {
     _Puntos = Puntos;
+    qDebug() << "insercion logica" << _Puntos->getDatoEnPos(0)->x;
 }
 
-CvSeq figura::getResult()
+CvSeq *figura::getResult()
 {
-    return *_Config;
+    return _Config;
 }
 
-CvPoint figura::getPuntos()
+ListaPuntos *figura::getPuntos()
 {
-    return *_Puntos;
+    qDebug() << "extraccion logica" << _Puntos->getDatoEnPos(0)->x;
+    return _Puntos;
 }

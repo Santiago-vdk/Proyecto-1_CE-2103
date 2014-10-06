@@ -23,6 +23,7 @@ public:
     explicit ventanaAprendizaje(QWidget *parent = 0, Facade* pFacade = NULL);
     ~ventanaAprendizaje();
     void procesadorImagen(string pUltimaImagen);
+    void dibujarFiguraCompuesta();
 
 public slots:
     void elSlot();
@@ -35,10 +36,9 @@ private slots:
     void on_botonSi_clicked();
     void on_botonRecuerdos_clicked();
     void interpretaImagenCompuesta();
-
     void on_botonIgnorar_clicked();
-
     void aprenderFormaCompuesta();
+
 
 signals:
     void procesamientoFinalizado();

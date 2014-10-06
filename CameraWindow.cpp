@@ -32,7 +32,6 @@ CameraWindow::CameraWindow(CvCapture *cam, QWidget *parent)
 
    connect(botonInterpretar, SIGNAL(clicked()), this, SLOT(interpretarImagen()));
 
-
    connect(buttonCompuesta, SIGNAL(clicked()), this, SLOT(figuraCompuesta()));
 
 
@@ -42,6 +41,11 @@ CameraWindow::CameraWindow(CvCapture *cam, QWidget *parent)
 string CameraWindow::getultimaImagen()
 {
     return _ultimaImagen;
+}
+
+string CameraWindow::getultimaImagenCompuesta()
+{
+    return _ultimaImagenCompuesta;
 }
 
 bool CameraWindow::getBanderaTomada()
@@ -89,13 +93,14 @@ void CameraWindow::figuraCompuesta()
     QString returnImagen = "c:\\fotos\\imagen" + QString::number(m_photoCounter) + ".jpg";
     if (photo.save("c:\\fotos\\imagen" + QString::number(m_photoCounter) + ".jpg")) {
         qDebug("Picture successfully saved!");
-        _ultimaImagen = returnImagen.toStdString();
+        _ultimaImagenCompuesta = returnImagen.toStdString();
         imagenTomada = true;
         m_photoCounter++;
     } else {
         qDebug("Error while saving the picture");
     }
     aprendeFormaCompuesta();
+
 }
 
 void CameraWindow::habilitaAprendeForma()

@@ -19,11 +19,12 @@ public:
     int verticesRecuerdo(int posicion);
     int cantidadRecuerdos();
     void nuevaCombinacion();
-    void agregarEnUltimaCombinacion(CvSeq *pResult,CvPoint *pPuntos);
+    void agregarEnUltimaCombinacion(CvSeq *pResult, ListaPuntos *pPuntos);
     bool CombinacionCorrecta(int pPos);
     int getTamanioCombinaciones();
-    listaFigura getListaTemporal();
-    void insertarListaTemporal(CvSeq *pResult);
+    listaFigura *getListaTemporal();
+    void insertarListaTemporal(int vertices);
+    combinaciones *getCombinacionEnPos(int pPos);
 
 
 

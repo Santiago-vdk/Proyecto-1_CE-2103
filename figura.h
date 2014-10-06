@@ -2,6 +2,11 @@
 #define FIGURA_H
 #include <string>
 #include <opencv/cv.h>
+#include "ListaPuntos.h"
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <assert.h>
+#include "opencv2/core/core.hpp"
 
 using namespace std;
 class figura
@@ -13,9 +18,9 @@ public:
     void setVertices(int vertices);
     void setNombre(string nombre);
     void setConfig(CvSeq *Config);
-    void setPuntos(CvPoint *Puntos);
-    CvPoint getPuntos();
-    CvSeq getResult();
+    void setPuntos(ListaPuntos *Puntos);
+    ListaPuntos *getPuntos();
+    CvSeq *getResult();
 
 
 
@@ -23,7 +28,7 @@ private:
     string _Nombre;
     int _Vertices;
     CvSeq *_Config;
-    CvPoint *_Puntos;
+    ListaPuntos *_Puntos;
 };
 
 #endif // FIGURA_H

@@ -18,6 +18,7 @@ class CameraWindow : public QWidget
 public:
     CameraWindow(CvCapture *camera, QWidget *parent=0);
     std::string getultimaImagen();
+    std::string getultimaImagenCompuesta();
     bool getBanderaTomada();
 
 private:
@@ -25,6 +26,7 @@ private:
     CvCapture *m_camera;
     int m_photoCounter;
     std::string _ultimaImagen;
+    std::string _ultimaImagenCompuesta;
 
     QPushButton *botonInterpretar;
 

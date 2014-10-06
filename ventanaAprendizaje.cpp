@@ -16,6 +16,8 @@
 #include <iostream>
 #include <stdio.h>
 
+#include "ListaPuntos.h"
+
 
 using namespace Qt;
 using namespace std;
@@ -84,27 +86,23 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
     qDebug() << "Procesando";
     std::string str = pUltimaImagen;
     const char *cstr = str.c_str();
-
     IplImage* img =  cvLoadImage(cstr);
-
     cvSmooth(img, img, CV_GAUSSIAN,3,3);
-
     IplImage* imgGrayScale = cvCreateImage(cvGetSize(img), 8, 1);
     cvCvtColor(img,imgGrayScale,CV_BGR2GRAY);
-
     cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
-
     CvSeq* contours;
     CvSeq* result;
     CvMemStorage *storage = cvCreateMemStorage(0);
-    //finding all contours in the image
+
+
     cvFindContours(imgGrayScale, storage, &contours, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
     //###############################################################################################
     bool banderaDetecteContornos = false;
     while(contours)
     {
         result = cvApproxPoly(contours, sizeof(CvContour), storage, CV_POLY_APPROX_DP, cvContourPerimeter(contours)*0.02, 0);
-        //if there are 3  vertices  in the contour(It should be a triangle)
+
         if(result->total==3  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
         {
             CvPoint *pt[3];
@@ -120,7 +118,7 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             _vertices = result->total;
             break;
         }
-        //if there are 4 vertices in the contour(It should be a quadrilateral)
+
         else if(result->total==4  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
         {
             CvPoint *pt[4];
@@ -137,7 +135,48 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
             _vertices = result->total;
             break;
         }
-        //if there are 7  vertices  in the contour(It should be a heptagon)
+
+        else if(result->total==5  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
+        {
+            CvPoint *pt[5];
+            for(int i=0;i<5;i++){
+                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+            }
+
+            cvLine(img, *pt[0], *pt[1], cvScalar(0,255,0),4);
+            cvLine(img, *pt[1], *pt[2], cvScalar(0,255,0),4);
+            cvLine(img, *pt[2], *pt[3], cvScalar(0,255,0),4);
+            cvLine(img, *pt[3], *pt[4], cvScalar(0,255,0),4);
+            cvLine(img, *pt[4], *pt[0], cvScalar(0,255,0),4);
+            qDebug() << "Pentagono";
+            banderaDetecteContornos = true;
+            _vertices = result->total;
+            break;
+        }
+
+
+
+        else if(result->total==6  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
+        {
+            CvPoint *pt[6];
+            for(int i=0;i<6;i++){
+                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+            }
+
+            cvLine(img, *pt[0], *pt[1], cvScalar(0,255,0),4);
+            cvLine(img, *pt[1], *pt[2], cvScalar(0,255,0),4);
+            cvLine(img, *pt[2], *pt[3], cvScalar(0,255,0),4);
+            cvLine(img, *pt[3], *pt[4], cvScalar(0,255,0),4);
+            cvLine(img, *pt[4], *pt[5], cvScalar(0,255,0),4);
+            cvLine(img, *pt[5], *pt[0], cvScalar(0,255,0),4);
+
+            qDebug() << "Hexagono";
+            banderaDetecteContornos = true;
+            _vertices = result->total;
+            break;
+        }
+
+
         else if(result->total ==7   && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
         {
 
@@ -158,7 +197,7 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
             break;
         }
-        //obtain the next contour
+
         contours = contours->h_next;
     }
     qDebug() << banderaDetecteContornos;
@@ -255,6 +294,8 @@ void ventanaAprendizaje::procesadorImagen(string pUltimaImagen)
 
 }
 
+
+
 void ventanaAprendizaje::elSlot()
 {
     qDebug() << "Se guardo una imagen nueva";
@@ -269,7 +310,6 @@ void ventanaAprendizaje::interaccionPC()
 {
     qDebug() << "Comienzo a interactuar";
     std::cout << "El numero de vertices de la ultima figura es: " << _vertices << std::endl;
-
     if(_facade->recordar(_vertices)){
         ui->output->setTextColor("red");
         ui->output->append("Ordenador: Ya conozco esta figura, la vuelvo a aprender?");
@@ -277,7 +317,6 @@ void ventanaAprendizaje::interaccionPC()
         ui->botonNo->setDisabled(false);
         qDebug() << "En espera de respuesta";
     }
-
     else{
         ui->output->setTextColor("red");
         ui->output->append("Ordenador: Figura aprendida!");
@@ -324,6 +363,162 @@ void ventanaAprendizaje::on_botonIgnorar_clicked()
 void ventanaAprendizaje::aprenderFormaCompuesta()
 {
 
+    std::string str = windowCamara->getultimaImagenCompuesta();
+    const char *cstr = str.c_str();
+    IplImage* imgIpl =  cvLoadImage(cstr);
+    cvSmooth(imgIpl, imgIpl, CV_GAUSSIAN,3,3);
+    IplImage* imgGrayScale = cvCreateImage(cvGetSize(imgIpl), 8, 1);
+    cvCvtColor(imgIpl,imgGrayScale,CV_BGR2GRAY);
+
+    cvThreshold(imgGrayScale,imgGrayScale,128,255,CV_THRESH_BINARY);
+
+    CvSeq* contours;
+    CvSeq* result;
+    CvMemStorage *storage = cvCreateMemStorage(0);
+    cvFindContours(imgGrayScale, storage, &contours, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
+    _facade->nuevaCombinacion();
+
+    while(contours)
+    {
+        result = cvApproxPoly(contours, sizeof(CvContour), storage, CV_POLY_APPROX_DP, cvContourPerimeter(contours)*0.02, 0);
+
+
+        if(result->total==3  && _facade->recordar(3) && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
+        {
+
+            ListaPuntos *puntos = new ListaPuntos();
+            for(int i=0;i<3;i++){
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
+            }
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(255,0,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(255,0,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(0)), cvScalar(255,0,0),4);
+            _facade->agregarEnUltimaCombinacion(result,puntos);
+
+        }
+
+        else if(result->total==4 && _facade->recordar(4)  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
+        {
+            ListaPuntos *puntos = new ListaPuntos();
+            for(int i=0;i<4;i++){
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
+            }
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,0),4);
+            _facade->agregarEnUltimaCombinacion(result,puntos);
+
+
+        }
+
+
+
+        else if(result->total==5&& _facade->recordar(5)  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+        {
+            ListaPuntos *puntos = new ListaPuntos();
+            for(int i=0;i<5;i++){
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
+            }
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,0,255),4);
+            _facade->agregarEnUltimaCombinacion(result,puntos);
+
+        }
+
+
+        //if there are 6  vertices  in the contour(It should be a triangle)
+        else if(result->total==6  && _facade->recordar(6) && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+        {
+            ListaPuntos *puntos = new ListaPuntos();
+            for(int i=0;i<6;i++){
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
+            }
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,255),4);
+            _facade->agregarEnUltimaCombinacion(result,puntos);
+
+        }
+
+
+        //if there are 7  vertices  in the contour(It should be a heptagon)
+        else if(result->total == 7  && _facade->recordar(7) && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+        {
+            ListaPuntos *puntos = new ListaPuntos();
+            for(int i=0;i<7;i++){
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
+            }
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(6)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(6)), *(puntos->getDatoEnPos(0)), cvScalar(199,6,186),4);
+            _facade->agregarEnUltimaCombinacion(result,puntos);
+        }
+
+
+        contours = contours->h_next;
+    }
+
+    //    cv::Mat imgMat = cv::cvarrToMat(imgIpl);
+
+    //    Mat src, src_gray;
+    //    src = imread(cstr, 1 );
+    //    /// Convert it to gray
+    //    cvtColor( src, src_gray, CV_BGR2GRAY );
+    //    GaussianBlur( src_gray, src_gray, Size(9, 9), 2, 2 );
+    //    vector<Vec3f> circles;
+    //    HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 2, src_gray.rows/2, 200, 100);
+
+    //    /// Draw the circles detected
+    //    for( size_t i = 0; i < circles.size(); i++ )
+    //    {
+    //        Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+    //        int radius = cvRound(circles[i][2]);
+    //        // circle center
+    //        cv::circle( imgMat, center, 3, Scalar(0,255,0), 3);
+    //        // circle outline
+    //        cv::circle( imgMat, center, radius, Scalar(0,0,255), 3);
+
+    //    }
+
+    //    Mat src,dst,cdst;
+    //    /// Read the image
+    //    src = imread(cstr, 1 );
+    //    Canny(src, dst, 50, 200, 3);
+
+    //    cvtColor(dst, cdst, CV_GRAY2BGR);
+    //    vector<Vec4i> lines;
+    //    HoughLinesP(dst, lines, 1, CV_PI/180, 200, 50, 10 );
+    //    for ( size_t i = 0; i < lines.size(); i++ ) {
+    //        Vec4i l = lines[i];
+    //        line( cdst, Point(l[0], l[1]),Point(l[2], l[3]), Scalar(0,0,255),3, CV_AA);
+    //    }
+
+
+
+
+    cvNamedWindow("Tracked");
+    cvShowImage("Tracked",imgIpl);
+    //cv::imshow( "Tracked", imgIpl );
+    cvWaitKey(0);
+    cvDestroyAllWindows();
+    cvReleaseMemStorage(&storage);
+    cvReleaseImage(&imgIpl);
+    cvReleaseImage(&imgGrayScale);
+
+    qDebug() << "Termine aprender figura compuesta";
+
+
 }
 
 
@@ -366,20 +561,23 @@ void ventanaAprendizaje::on_botonRecuerdos_clicked()
 
 void ventanaAprendizaje::interpretaImagenCompuesta()
 {
-
-    qDebug() << "aqui";
-
-    std::string str = "C:/fotos/casa.jpg";
+    qDebug()<< "interpretaImagenCompuesta";
+    std::string str = "C:/fotos/rand.jpg";
     const char *cstr = str.c_str();
     IplImage* imgIpl =  cvLoadImage(cstr);
     cvSmooth(imgIpl, imgIpl, CV_GAUSSIAN,3,3);
     IplImage* imgGrayScale = cvCreateImage(cvGetSize(imgIpl), 8, 1);
     cvCvtColor(imgIpl,imgGrayScale,CV_BGR2GRAY);
-    cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
+
+    //cvThreshold(imgGrayScale,imgGrayScale,100,255,CV_THRESH_BINARY_INV);
+    cvThreshold(imgGrayScale,imgGrayScale,128,255,CV_THRESH_BINARY);
+
     CvSeq* contours;
-    CvSeq* result;
+    CvSeq* result = new CvSeq();
     CvMemStorage *storage = cvCreateMemStorage(0);
     cvFindContours(imgGrayScale, storage, &contours, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE, cvPoint(0,0));
+
+
 
     while(contours)
     {
@@ -388,44 +586,103 @@ void ventanaAprendizaje::interpretaImagenCompuesta()
         //if there are 3  vertices  in the contour(It should be a triangle)
         if(result->total==3  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
         {
-            CvPoint *pt[3];
+            ListaPuntos *puntos = new ListaPuntos();
             for(int i=0;i<3;i++){
-                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
             }
-            cvLine(imgIpl, *pt[0], *pt[1], cvScalar(255,0,0),4);
-            cvLine(imgIpl, *pt[1], *pt[2], cvScalar(255,0,0),4);
-            cvLine(imgIpl, *pt[2], *pt[0], cvScalar(255,0,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(255,0,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(255,0,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(0)), cvScalar(255,0,0),4);
+
+            int v=result->total;
+            _facade->insertarListaTemporal(v);
+            std::cout<< "al insertar" << puntos->getDatoEnPos(0)->x << std::endl;
+            _facade->getListaTemporal()->getTail()->getFigura()->setPuntos(puntos);
+            std::cout<< "al insertar dsdsfasdf" << _facade->getListaTemporal()->getTail()->getFigura()->getPuntos()->getDatoEnPos(0)->x << std::endl;
 
         }
+
+
         //if there are 4 vertices in the contour(It should be a quadrilateral)
         else if(result->total==4  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100)
         {
-            CvPoint *pt[4];
+            ListaPuntos *puntos = new ListaPuntos();
             for(int i=0;i<4;i++){
-                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
             }
-            cvLine(imgIpl, *pt[0], *pt[1], cvScalar(0,255,0),4);
-            cvLine(imgIpl, *pt[1], *pt[2], cvScalar(0,255,0),4);
-            cvLine(imgIpl, *pt[2], *pt[3], cvScalar(0,255,0),4);
-            cvLine(imgIpl, *pt[3], *pt[0], cvScalar(0,255,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,0),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,0),4);
+
+            qDebug() << "cuadrado";
+            int v=result->total;
+            _facade->insertarListaTemporal(v);
+            _facade->getListaTemporal()->getTail()->getFigura()->setPuntos(puntos);
+
 
         }
+
+
+
+        else if(result->total==5  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+        {
+            ListaPuntos *puntos = new ListaPuntos();
+            for(int i=0;i<5;i++){
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
+            }
+
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,0,255),4);
+            int v=result->total;
+            _facade->insertarListaTemporal(v);
+            _facade->getListaTemporal()->getTail()->getFigura()->setPuntos(puntos);
+
+        }
+
+
+        //if there are 6  vertices  in the contour(It should be a triangle)
+        if(result->total==6  && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
+        {
+            ListaPuntos *puntos = new ListaPuntos();
+            for(int i=0;i<6;i++){
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
+            }
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(0,255,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,255),4);
+            int v=result->total;
+            _facade->insertarListaTemporal(v);
+            _facade->getListaTemporal()->getTail()->getFigura()->setPuntos(puntos);
+
+        }
+
+
         //if there are 7  vertices  in the contour(It should be a heptagon)
         else if(result->total == 7   && fabs(cvContourArea(result, CV_WHOLE_SEQ))>100 )
         {
-            CvPoint *pt[7];
+            ListaPuntos *puntos = new ListaPuntos();
             for(int i=0;i<7;i++){
-                pt[i] = (CvPoint*)cvGetSeqElem(result, i);
+                puntos->insertarDato((CvPoint*)cvGetSeqElem(result, i));
             }
-            cvLine(imgIpl, *pt[0], *pt[1], cvScalar(0,0,255),4);
-            cvLine(imgIpl, *pt[1], *pt[2], cvScalar(0,0,255),4);
-            cvLine(imgIpl, *pt[2], *pt[3], cvScalar(0,0,255),4);
-            cvLine(imgIpl, *pt[3], *pt[4], cvScalar(0,0,255),4);
-            cvLine(imgIpl, *pt[4], *pt[5], cvScalar(0,0,255),4);
-            cvLine(imgIpl, *pt[5], *pt[6], cvScalar(0,0,255),4);
-            cvLine(imgIpl, *pt[6], *pt[0], cvScalar(0,0,255),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(6)), cvScalar(199,6,186),4);
+            cvLine(imgIpl, *(puntos->getDatoEnPos(6)), *(puntos->getDatoEnPos(0)), cvScalar(199,6,186),4);
+            int v=result->total;
+            _facade->insertarListaTemporal(v);
+            _facade->getListaTemporal()->getTail()->getFigura()->setPuntos(puntos);
         }
-        //obtain the next contour
+
         contours = contours->h_next;
     }
 
@@ -465,18 +722,192 @@ void ventanaAprendizaje::interpretaImagenCompuesta()
     //    }
 
 
-    cvNamedWindow("Tracked");
-    cvShowImage("Tracked",imgIpl);
+    for(int k = 0; k < _facade->getListaTemporal()->getTamanio(); k++){
+        qDebug() << "la lista" << _facade->getListaTemporal()->getPos(1)->getFigura()->getPuntos()->getDatoEnPos(k)->x;
+    }
 
-    //cv::imshow( "Tracked", imgIpl );
 
-    cvWaitKey(0);
-    cvDestroyAllWindows();
-    cvReleaseMemStorage(&storage);
-    cvReleaseImage(&imgIpl);
-    cvReleaseImage(&imgGrayScale);
+
+    for(int k = 0; k < _facade->getCombinacionEnPos(0)->getListaElementos()->getTamanio(); k++){
+        qDebug() << "la lista 1" << _facade->getCombinacionEnPos(0)->getListaElementos()->getPos(k)->getFigura()->getPuntos()->getDatoEnPos(0)->x;
+    }
+
+    qDebug()<< "Interpreta figura compuesta tracked";
+
+    qDebug()<< "A dibujar";
+    dibujarFiguraCompuesta();
+
 
 }
+
+void ventanaAprendizaje::dibujarFiguraCompuesta()
+{
+    qDebug()<< "dibujarFIguraCompuesta";
+
+
+
+    std::string str = "C:/fotos/blackimg.jpg";
+    const char *cstr = str.c_str();
+    IplImage* imgIpl =  cvLoadImage(cstr);
+
+    for(int i = 0; i < _facade->getTamanioCombinaciones(); i++){
+        if(_facade->CombinacionCorrecta(i)){
+
+
+
+            for(int j = 0; j < _facade->getCombinacionEnPos(i)->getCantidad(); j++){
+
+                ListaPuntos *puntos=_facade->getCombinacionEnPos(i)->getListaElementos()->getPos(j)->getFigura()->getPuntos();
+
+
+
+                //Figura de 3 vertices
+                if(_facade->getCombinacionEnPos(i)->getListaElementos()->getPos(j)->getFigura()->getVertices() == 3){
+
+                    qDebug()<< "triangulo";
+
+                    std::cout<< _facade->getCombinacionEnPos(i)->getListaElementos()->getPos(j)->getFigura()->getPuntos()->getDatoEnPos(0)->x << std::endl;
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(255,0,0),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(255,0,0),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(0)), cvScalar(255,0,0),4);
+
+
+                }
+
+                //Figura de 4 vertices
+
+
+                else if(_facade->getCombinacionEnPos(i)->getListaElementos()->getPos(j)->getFigura()->getVertices() == 4){
+                    qDebug()<< "cuadrado";
+
+
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,0),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,0),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,0),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,0),4);
+                }
+
+                //Figura de 5 vertices
+                else if(_facade->getCombinacionEnPos(i)->getListaElementos()->getPos(j)->getFigura()->getVertices() == 5){
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,0,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,0,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,0,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,0,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,0,255),4);
+                }
+
+                //Figura de 6 vertices
+                else if(_facade->getCombinacionEnPos(i)->getListaElementos()->getPos(j)->getFigura()->getVertices() == 6){
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,255,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(0,255,255),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,255),4);
+                }
+
+                //Figura de 7 vertices
+                else if(_facade->getCombinacionEnPos(i)->getListaElementos()->getPos(j)->getFigura()->getVertices() == 7){
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(199,6,186),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(199,6,186),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(199,6,186),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(199,6,186),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(199,6,186),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(6)), cvScalar(199,6,186),4);
+                    cvLine(imgIpl, *(puntos->getDatoEnPos(6)), *(puntos->getDatoEnPos(0)), cvScalar(199,6,186),4);
+                }
+            }
+        }
+    }
+
+
+
+    //Sale primer for
+    if(_facade->getListaTemporal()->getTamanio() > 0){
+
+
+        qDebug() << "tamanio de " << _facade->getListaTemporal()->getTamanio();
+
+        for(int santiGuapo = 0; santiGuapo < _facade->getListaTemporal()->getTamanio(); santiGuapo++){
+
+            ListaPuntos *puntos = _facade->getListaTemporal()->getPos(santiGuapo)->getFigura()->getPuntos();
+            //Figura de 3 vertices
+            qDebug() << "antes if " << _facade->getListaTemporal()->getPos(santiGuapo)->getFigura()->getVertices();
+            if(_facade->getListaTemporal()->getPos(santiGuapo)->getFigura()->getVertices() == 3){
+                qDebug() << "if 3 vertices";
+                cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(255,0,0),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(255,0,0),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(0)), cvScalar(255,0,0),4);
+            }
+
+            //Figura de 4 vertices
+            if(_facade->getListaTemporal()->getPos(santiGuapo)->getFigura()->getVertices() == 4){
+
+                qDebug() << "if 4 vertices";
+
+                cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,0),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,0),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,0),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,0),4);
+            }
+
+            //Figura de 5 vertices
+            if(_facade->getListaTemporal()->getPos(santiGuapo)->getFigura()->getVertices() == 5){
+
+                qDebug() << "if 5 vertices";
+
+                cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,0,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,0,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,0,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,0,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,0,255),4);
+            }
+
+            //Figura de 6 vertices
+            if(_facade->getListaTemporal()->getPos(santiGuapo)->getFigura()->getVertices() == 6){
+
+                qDebug() << "if 6 vertices";
+
+                cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(0,255,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(0,255,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(0,255,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(0,255,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(0,255,255),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(0)), cvScalar(0,255,255),4);
+            }
+
+            //Figura de 7 vertices
+            if(_facade->getListaTemporal()->getPos(santiGuapo)->getFigura()->getVertices() == 7){
+
+                qDebug() << "if 7 vertices";
+
+                cvLine(imgIpl, *(puntos->getDatoEnPos(0)), *(puntos->getDatoEnPos(1)), cvScalar(199,6,186),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(1)), *(puntos->getDatoEnPos(2)), cvScalar(199,6,186),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(2)), *(puntos->getDatoEnPos(3)), cvScalar(199,6,186),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(3)), *(puntos->getDatoEnPos(4)), cvScalar(199,6,186),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(4)), *(puntos->getDatoEnPos(5)), cvScalar(199,6,186),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(5)), *(puntos->getDatoEnPos(6)), cvScalar(199,6,186),4);
+                cvLine(imgIpl, *(puntos->getDatoEnPos(6)), *(puntos->getDatoEnPos(0)), cvScalar(199,6,186),4);
+            }
+
+        }
+
+    }
+
+
+
+    //cv::Mat imgMat = cv::cvarrToMat(imgIpl);
+    cvNamedWindow("Tracked2");
+    cvShowImage("Tracked2",imgIpl);
+    //cvResize(imgIpl,final);
+
+
+
+
+} //Llave metodo
+
+
+
 
 
 

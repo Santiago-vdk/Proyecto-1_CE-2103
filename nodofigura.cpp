@@ -1,4 +1,5 @@
 #include "nodoFigura.h"
+#include <QDebug>
 
 nodoFigura::nodoFigura(figura *dato)
 {
@@ -8,6 +9,7 @@ nodoFigura::nodoFigura(figura *dato)
 
 figura *nodoFigura::getFigura()
 {
+    //qDebug()<< "sali get figura en figura";
     return _dato;
 }
 
